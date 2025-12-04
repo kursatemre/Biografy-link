@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import type { Link } from '@/types'
 
-export function useLinks(profileId?: string) {
+export function useLinks(profileId?: string, includeInactive = false) {
   const [links, setLinks] = useState<Link[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
@@ -16,12 +16,17 @@ export function useLinks(profileId?: string) {
     const fetchLinks = async () => {
       try {
         setLoading(true)
-        const { data, error } = await supabase
+        let query = supabase
           .from('links')
           .select('*')
           .eq('profile_id', profileId)
-          .eq('is_active', true)
-          .order('position', { ascending: true })
+
+        // Only filter by is_active if includeInactive is false
+        if (!includeInactive) {
+          query = query.eq('is_active', true)
+        }
+
+        const { data, error } = await query.order('position', { ascending: true })
 
         if (error) throw error
         setLinks(data || [])
@@ -54,7 +59,7 @@ export function useLinks(profileId?: string) {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [profileId])
+  }, [profileId, includeInactive])
 
   const addLink = async (link: Omit<Link, 'id' | 'created_at' | 'updated_at'>) => {
     try {

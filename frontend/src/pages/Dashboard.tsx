@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link2, Plus, Settings, BarChart3, LogOut, X } from 'lucide-react'
+import { Link2, Plus, Settings, BarChart3, LogOut, X, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfile } from '@/hooks/useProfile'
@@ -11,7 +11,7 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const { user, signOut, loading: authLoading } = useAuth()
   const { profile, loading: profileLoading, updateProfile } = useProfile(user?.id)
-  const { links, loading: linksLoading, addLink, updateLink, deleteLink } = useLinks(profile?.id)
+  const { links, loading: linksLoading, addLink, updateLink, deleteLink, reorderLinks } = useLinks(profile?.id, true)
   const { stats, loading: analyticsLoading } = useProfileAnalytics(profile?.id)
   const { themes, loading: themesLoading } = useThemes()
 
@@ -131,6 +131,45 @@ export default function Dashboard() {
     } else {
       alert(`Error: ${error.message}`)
     }
+  }
+
+  const handleToggleLink = async (id: string, currentStatus: boolean) => {
+    setSuccessMessage('')
+    const { error } = await updateLink(id, { is_active: !currentStatus })
+
+    if (!error) {
+      setSuccessMessage(`Link ${!currentStatus ? 'activated' : 'deactivated'} successfully! ✓`)
+      setTimeout(() => setSuccessMessage(''), 3000)
+    } else {
+      alert(`Error: ${error.message}`)
+    }
+  }
+
+  const handleMoveUp = async (index: number) => {
+    if (index === 0) return // Already at the top
+    const newLinks = [...links]
+    ;[newLinks[index - 1], newLinks[index]] = [newLinks[index], newLinks[index - 1]]
+
+    const { error } = await reorderLinks(newLinks)
+    if (error) {
+      alert(`Error: ${error.message}`)
+    }
+  }
+
+  const handleMoveDown = async (index: number) => {
+    if (index === links.length - 1) return // Already at the bottom
+    const newLinks = [...links]
+    ;[newLinks[index], newLinks[index + 1]] = [newLinks[index + 1], newLinks[index]]
+
+    const { error } = await reorderLinks(newLinks)
+    if (error) {
+      alert(`Error: ${error.message}`)
+    }
+  }
+
+  const getLinkClicks = (linkId: string) => {
+    const linkStat = stats.linkClicks.find(lc => lc.link_id === linkId)
+    return linkStat?.count || 0
   }
 
   const openEditModal = (link: any) => {
@@ -296,28 +335,88 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="space-y-2 sm:space-y-3">
-                  {links.map((link) => (
+                  {links.map((link, index) => (
                     <div
                       key={link.id}
-                      className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 border border-gray-200 rounded-lg hover:border-primary-300 transition-colors"
+                      className={`flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 border-2 rounded-lg transition-all ${
+                        link.is_active
+                          ? 'border-gray-200 hover:border-primary-300 bg-white'
+                          : 'border-gray-200 bg-gray-50 opacity-60'
+                      }`}
                     >
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 mb-1">
                           {link.icon && <span className="text-lg">{link.icon}</span>}
-                          <h3 className="font-medium text-sm sm:text-base truncate">{link.title}</h3>
+                          <h3 className="font-medium text-sm sm:text-base truncate">
+                            {link.title}
+                            {!link.is_active && (
+                              <span className="ml-2 text-xs text-gray-500">(Inactive)</span>
+                            )}
+                          </h3>
                         </div>
-                        <p className="text-xs sm:text-sm text-gray-600 truncate">{link.url}</p>
+                        <p className="text-xs sm:text-sm text-gray-600 truncate mb-2">{link.url}</p>
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                          <BarChart3 className="w-3 h-3" />
+                          <span>{getLinkClicks(link.id)} clicks</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-center">
+
+                      <div className="flex items-center gap-1 sm:gap-2 self-end sm:self-center flex-wrap sm:flex-nowrap">
+                        {/* Toggle Active/Inactive */}
+                        <button
+                          onClick={() => handleToggleLink(link.id, link.is_active)}
+                          className={`p-1.5 sm:p-2 rounded hover:bg-gray-100 transition-colors ${
+                            link.is_active ? 'text-green-600' : 'text-gray-400'
+                          }`}
+                          title={link.is_active ? 'Deactivate link' : 'Activate link'}
+                        >
+                          {link.is_active ? (
+                            <Eye className="w-4 h-4" />
+                          ) : (
+                            <EyeOff className="w-4 h-4" />
+                          )}
+                        </button>
+
+                        {/* Move Up */}
+                        <button
+                          onClick={() => handleMoveUp(index)}
+                          disabled={index === 0}
+                          className={`p-1.5 sm:p-2 rounded transition-colors ${
+                            index === 0
+                              ? 'text-gray-300 cursor-not-allowed'
+                              : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                          }`}
+                          title="Move up"
+                        >
+                          <ChevronUp className="w-4 h-4" />
+                        </button>
+
+                        {/* Move Down */}
+                        <button
+                          onClick={() => handleMoveDown(index)}
+                          disabled={index === links.length - 1}
+                          className={`p-1.5 sm:p-2 rounded transition-colors ${
+                            index === links.length - 1
+                              ? 'text-gray-300 cursor-not-allowed'
+                              : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                          }`}
+                          title="Move down"
+                        >
+                          <ChevronDown className="w-4 h-4" />
+                        </button>
+
+                        {/* Edit */}
                         <button
                           onClick={() => openEditModal(link)}
-                          className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 px-2 py-1"
+                          className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 px-2 py-1 hover:bg-gray-100 rounded"
                         >
                           Edit
                         </button>
+
+                        {/* Delete */}
                         <button
                           onClick={() => handleDeleteLink(link.id)}
-                          className="text-xs sm:text-sm text-red-600 hover:text-red-700 px-2 py-1"
+                          className="text-xs sm:text-sm text-red-600 hover:text-red-700 px-2 py-1 hover:bg-red-50 rounded"
                         >
                           Delete
                         </button>
