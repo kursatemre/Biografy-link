@@ -1,11 +1,93 @@
-import { useState } from 'react'
-import { Link2, Plus, Settings, BarChart3, LogOut } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Link2, Plus, Settings, BarChart3, LogOut, X } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/hooks/useAuth'
+import { useProfile } from '@/hooks/useProfile'
+import { useLinks } from '@/hooks/useLinks'
 
 export default function Dashboard() {
-  const [links] = useState([
-    { id: '1', title: 'My Website', url: 'https://example.com', is_active: true },
-    { id: '2', title: 'Instagram', url: 'https://instagram.com/username', is_active: true },
-  ])
+  const navigate = useNavigate()
+  const { user, signOut } = useAuth()
+  const { profile, loading: profileLoading } = useProfile(user?.id)
+  const { links, loading: linksLoading, addLink, updateLink, deleteLink } = useLinks(profile?.id)
+
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [editingLink, setEditingLink] = useState<any>(null)
+  const [formData, setFormData] = useState({ title: '', url: '', icon: '' })
+  const [submitting, setSubmitting] = useState(false)
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!user && !profileLoading) {
+      navigate('/auth')
+    }
+  }, [user, profileLoading, navigate])
+
+  const handleSignOut = async () => {
+    await signOut()
+    navigate('/auth')
+  }
+
+  const handleAddLink = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!profile?.id) return
+
+    setSubmitting(true)
+    const { error } = await addLink({
+      profile_id: profile.id,
+      title: formData.title,
+      url: formData.url,
+      icon: formData.icon || null,
+      is_active: true,
+      position: links.length,
+    })
+
+    if (!error) {
+      setShowAddModal(false)
+      setFormData({ title: '', url: '', icon: '' })
+    }
+    setSubmitting(false)
+  }
+
+  const handleEditLink = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingLink) return
+
+    setSubmitting(true)
+    const { error } = await updateLink(editingLink.id, {
+      title: formData.title,
+      url: formData.url,
+      icon: formData.icon || null,
+    })
+
+    if (!error) {
+      setEditingLink(null)
+      setFormData({ title: '', url: '', icon: '' })
+    }
+    setSubmitting(false)
+  }
+
+  const handleDeleteLink = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this link?')) return
+    await deleteLink(id)
+  }
+
+  const openEditModal = (link: any) => {
+    setEditingLink(link)
+    setFormData({
+      title: link.title,
+      url: link.url,
+      icon: link.icon || '',
+    })
+  }
+
+  if (profileLoading || !profile) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -19,7 +101,7 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
               <a
-                href="/yourusername"
+                href={`/${profile.username}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs sm:text-sm text-primary-600 hover:underline hidden sm:inline"
@@ -27,14 +109,18 @@ export default function Dashboard() {
                 View Profile
               </a>
               <a
-                href="/yourusername"
+                href={`/${profile.username}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs text-primary-600 hover:underline sm:hidden"
               >
                 View
               </a>
-              <button className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg" aria-label="Logout">
+              <button
+                onClick={handleSignOut}
+                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg"
+                aria-label="Logout"
+              >
                 <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
@@ -47,9 +133,23 @@ export default function Dashboard() {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="card">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full" />
-              <h2 className="text-lg sm:text-xl font-semibold text-center mb-1">@yourusername</h2>
-              <p className="text-gray-600 text-center text-xs sm:text-sm mb-4">Your bio goes here</p>
+              {profile.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.display_name || profile.username}
+                  className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xl sm:text-2xl font-bold">
+                  {profile.username?.[0]?.toUpperCase() || '?'}
+                </div>
+              )}
+              <h2 className="text-lg sm:text-xl font-semibold text-center mb-1">
+                @{profile.username}
+              </h2>
+              <p className="text-gray-600 text-center text-xs sm:text-sm mb-4">
+                {profile.bio || 'No bio yet'}
+              </p>
 
               <div className="space-y-2">
                 <button className="w-full btn btn-primary justify-center flex items-center gap-2 text-sm sm:text-base">
@@ -70,8 +170,8 @@ export default function Dashboard() {
                     <div className="text-xs sm:text-sm text-gray-600">Views</div>
                   </div>
                   <div>
-                    <div className="text-xl sm:text-2xl font-bold text-primary-600">0</div>
-                    <div className="text-xs sm:text-sm text-gray-600">Clicks</div>
+                    <div className="text-xl sm:text-2xl font-bold text-primary-600">{links.length}</div>
+                    <div className="text-xs sm:text-sm text-gray-600">Links</div>
                   </div>
                 </div>
               </div>
@@ -83,18 +183,30 @@ export default function Dashboard() {
             <div className="card">
               <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <h2 className="text-xl sm:text-2xl font-bold">Your Links</h2>
-                <button className="btn btn-primary flex items-center gap-2 text-sm sm:text-base px-3 sm:px-4">
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  className="btn btn-primary flex items-center gap-2 text-sm sm:text-base px-3 sm:px-4"
+                >
                   <Plus className="w-4 h-4" />
                   <span className="hidden sm:inline">Add Link</span>
                   <span className="sm:hidden">Add</span>
                 </button>
               </div>
 
-              {links.length === 0 ? (
+              {linksLoading ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">Loading links...</p>
+                </div>
+              ) : links.length === 0 ? (
                 <div className="text-center py-8 sm:py-12">
                   <Link2 className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
                   <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">No links yet</p>
-                  <button className="btn btn-primary text-sm sm:text-base">Add Your First Link</button>
+                  <button
+                    onClick={() => setShowAddModal(true)}
+                    className="btn btn-primary text-sm sm:text-base"
+                  >
+                    Add Your First Link
+                  </button>
                 </div>
               ) : (
                 <div className="space-y-2 sm:space-y-3">
@@ -104,14 +216,23 @@ export default function Dashboard() {
                       className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 border border-gray-200 rounded-lg hover:border-primary-300 transition-colors"
                     >
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-sm sm:text-base truncate">{link.title}</h3>
+                        <div className="flex items-center gap-2">
+                          {link.icon && <span className="text-lg">{link.icon}</span>}
+                          <h3 className="font-medium text-sm sm:text-base truncate">{link.title}</h3>
+                        </div>
                         <p className="text-xs sm:text-sm text-gray-600 truncate">{link.url}</p>
                       </div>
                       <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-center">
-                        <button className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 px-2 py-1">
+                        <button
+                          onClick={() => openEditModal(link)}
+                          className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 px-2 py-1"
+                        >
                           Edit
                         </button>
-                        <button className="text-xs sm:text-sm text-red-600 hover:text-red-700 px-2 py-1">
+                        <button
+                          onClick={() => handleDeleteLink(link.id)}
+                          className="text-xs sm:text-sm text-red-600 hover:text-red-700 px-2 py-1"
+                        >
                           Delete
                         </button>
                       </div>
@@ -123,6 +244,98 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Add/Edit Link Modal */}
+      {(showAddModal || editingLink) && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl max-w-md w-full p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold">
+                {editingLink ? 'Edit Link' : 'Add New Link'}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowAddModal(false)
+                  setEditingLink(null)
+                  setFormData({ title: '', url: '', icon: '' })
+                }}
+                className="p-1 hover:bg-gray-100 rounded"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={editingLink ? handleEditLink : handleAddLink} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  className="input"
+                  placeholder="My Website"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  required
+                  disabled={submitting}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  URL
+                </label>
+                <input
+                  type="url"
+                  className="input"
+                  placeholder="https://example.com"
+                  value={formData.url}
+                  onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                  required
+                  disabled={submitting}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Icon (emoji, optional)
+                </label>
+                <input
+                  type="text"
+                  className="input"
+                  placeholder="🌐"
+                  maxLength={2}
+                  value={formData.icon}
+                  onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                  disabled={submitting}
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddModal(false)
+                    setEditingLink(null)
+                    setFormData({ title: '', url: '', icon: '' })
+                  }}
+                  className="flex-1 btn btn-secondary"
+                  disabled={submitting}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 btn btn-primary"
+                  disabled={submitting}
+                >
+                  {submitting ? 'Saving...' : (editingLink ? 'Update' : 'Add Link')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
