@@ -8,31 +8,54 @@ import { useLinks } from '@/hooks/useLinks'
 export default function Dashboard() {
   const navigate = useNavigate()
   const { user, signOut, loading: authLoading } = useAuth()
-  const { profile, loading: profileLoading } = useProfile(user?.id)
+  const { profile, loading: profileLoading, updateProfile } = useProfile(user?.id)
   const { links, loading: linksLoading, addLink, updateLink, deleteLink } = useLinks(profile?.id)
 
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingLink, setEditingLink] = useState<any>(null)
+  const [showSettings, setShowSettings] = useState(false)
+  const [showAnalytics, setShowAnalytics] = useState(false)
   const [formData, setFormData] = useState({ title: '', url: '', icon: '' })
+  const [settingsData, setSettingsData] = useState({
+    display_name: '',
+    bio: '',
+    avatar_url: ''
+  })
   const [submitting, setSubmitting] = useState(false)
+
+  // Update settings data when profile loads
+  useEffect(() => {
+    if (profile) {
+      setSettingsData({
+        display_name: profile.display_name || '',
+        bio: profile.bio || '',
+        avatar_url: profile.avatar_url || '',
+      })
+    }
+  }, [profile])
 
   // Redirect to auth if not logged in
   useEffect(() => {
-    console.log('🔍 Dashboard Debug:')
-    console.log('  - authLoading:', authLoading)
-    console.log('  - user:', user)
-    console.log('  - profileLoading:', profileLoading)
-    console.log('  - profile:', profile)
-
     if (!authLoading && !user) {
-      console.log('❌ No user found, redirecting to /auth')
       navigate('/auth')
     }
-  }, [user, authLoading, profileLoading, profile, navigate])
+  }, [user, authLoading, navigate])
 
   const handleSignOut = async () => {
     await signOut()
     navigate('/auth')
+  }
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSubmitting(true)
+
+    const { error } = await updateProfile(settingsData)
+
+    if (!error) {
+      setShowSettings(false)
+    }
+    setSubmitting(false)
   }
 
   const handleAddLink = async (e: React.FormEvent) => {
@@ -88,45 +111,18 @@ export default function Dashboard() {
     })
   }
 
-  // DEBUG: Show debug info on screen for mobile
-  const showDebug = true
-
   if (authLoading || profileLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="card max-w-md w-full">
-          <div className="text-gray-600 text-center mb-4">Loading...</div>
-          {showDebug && (
-            <div className="text-xs bg-yellow-50 p-3 rounded border border-yellow-200">
-              <div><strong>Debug Info:</strong></div>
-              <div>authLoading: {String(authLoading)}</div>
-              <div>profileLoading: {String(profileLoading)}</div>
-              <div>user: {user ? 'YES ✓' : 'NO ✗'}</div>
-              <div>user.id: {user?.id?.substring(0, 8) || 'null'}</div>
-              <div>profile: {profile ? 'YES ✓' : 'NO ✗'}</div>
-            </div>
-          )}
-        </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
       </div>
     )
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="card max-w-md w-full text-center">
-          <div className="text-gray-600 mb-4">Profile not found</div>
-          {showDebug && (
-            <div className="text-xs bg-red-50 p-3 rounded border border-red-200 text-left">
-              <div><strong>Debug Info:</strong></div>
-              <div>authLoading: {String(authLoading)}</div>
-              <div>profileLoading: {String(profileLoading)}</div>
-              <div>user: {user ? 'YES ✓' : 'NO ✗'}</div>
-              <div>user.id: {user?.id || 'null'}</div>
-              <div>profile: NULL</div>
-            </div>
-          )}
-        </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Profile not found</div>
       </div>
     )
   }
@@ -194,12 +190,18 @@ export default function Dashboard() {
               </p>
 
               <div className="space-y-2">
-                <button className="w-full btn btn-primary justify-center flex items-center gap-2 text-sm sm:text-base">
+                <button
+                  onClick={() => setShowSettings(true)}
+                  className="w-full btn btn-primary justify-center flex items-center gap-2 text-sm sm:text-base"
+                >
                   <Settings className="w-4 h-4" />
                   <span className="hidden sm:inline">Profile Settings</span>
                   <span className="sm:hidden">Settings</span>
                 </button>
-                <button className="w-full btn btn-secondary justify-center flex items-center gap-2 text-sm sm:text-base">
+                <button
+                  onClick={() => setShowAnalytics(true)}
+                  className="w-full btn btn-secondary justify-center flex items-center gap-2 text-sm sm:text-base"
+                >
                   <BarChart3 className="w-4 h-4" />
                   Analytics
                 </button>
@@ -286,6 +288,134 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold">Profile Settings</h3>
+              <button
+                onClick={() => setShowSettings(false)}
+                className="p-1 hover:bg-gray-100 rounded"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateProfile} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Display Name
+                </label>
+                <input
+                  type="text"
+                  className="input"
+                  placeholder="Your Name"
+                  value={settingsData.display_name}
+                  onChange={(e) => setSettingsData({ ...settingsData, display_name: e.target.value })}
+                  disabled={submitting}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Bio
+                </label>
+                <textarea
+                  className="input"
+                  placeholder="Tell us about yourself..."
+                  rows={3}
+                  value={settingsData.bio}
+                  onChange={(e) => setSettingsData({ ...settingsData, bio: e.target.value })}
+                  disabled={submitting}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Avatar URL
+                </label>
+                <input
+                  type="url"
+                  className="input"
+                  placeholder="https://example.com/avatar.jpg"
+                  value={settingsData.avatar_url}
+                  onChange={(e) => setSettingsData({ ...settingsData, avatar_url: e.target.value })}
+                  disabled={submitting}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Paste a link to your profile picture
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowSettings(false)}
+                  className="flex-1 btn btn-secondary"
+                  disabled={submitting}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 btn btn-primary"
+                  disabled={submitting}
+                >
+                  {submitting ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Analytics Modal */}
+      {showAnalytics && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl max-w-md w-full p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold">Analytics</h3>
+              <button
+                onClick={() => setShowAnalytics(false)}
+                className="p-1 hover:bg-gray-100 rounded"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="card bg-gradient-to-br from-primary-50 to-purple-50 border-primary-100">
+                <div className="text-3xl font-bold text-primary-600">0</div>
+                <div className="text-sm text-gray-600 mt-1">Total Profile Views</div>
+              </div>
+
+              <div className="card bg-gradient-to-br from-green-50 to-emerald-50 border-green-100">
+                <div className="text-3xl font-bold text-green-600">0</div>
+                <div className="text-sm text-gray-600 mt-1">Total Link Clicks</div>
+              </div>
+
+              <div className="card bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-100">
+                <div className="text-3xl font-bold text-blue-600">{links.length}</div>
+                <div className="text-sm text-gray-600 mt-1">Active Links</div>
+              </div>
+
+              <div className="text-center text-sm text-gray-500 mt-6">
+                <p>Analytics tracking coming soon! 📊</p>
+                <p className="mt-1">We'll track views and clicks on your links.</p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowAnalytics(false)}
+              className="w-full btn btn-secondary mt-6"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Add/Edit Link Modal */}
       {(showAddModal || editingLink) && (
