@@ -1,0 +1,23 @@
+{
+  "name": "biografy-link",
+  "version": "0.1.0",
+  "description": "Link-in-bio platform for social media profiles",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "preview": "cd frontend && npm run preview",
+    "type-check": "cd frontend && npm run type-check"
+  },
+  "keywords": [
+    "link-in-bio",
+    "linktree",
+    "social-media",
+    "landing-page"
+  ],
+  "author": "",
+  "license": "MIT"
+}
