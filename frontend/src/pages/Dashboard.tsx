@@ -88,18 +88,45 @@ export default function Dashboard() {
     })
   }
 
+  // DEBUG: Show debug info on screen for mobile
+  const showDebug = true
+
   if (authLoading || profileLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="card max-w-md w-full">
+          <div className="text-gray-600 text-center mb-4">Loading...</div>
+          {showDebug && (
+            <div className="text-xs bg-yellow-50 p-3 rounded border border-yellow-200">
+              <div><strong>Debug Info:</strong></div>
+              <div>authLoading: {String(authLoading)}</div>
+              <div>profileLoading: {String(profileLoading)}</div>
+              <div>user: {user ? 'YES ✓' : 'NO ✗'}</div>
+              <div>user.id: {user?.id?.substring(0, 8) || 'null'}</div>
+              <div>profile: {profile ? 'YES ✓' : 'NO ✗'}</div>
+            </div>
+          )}
+        </div>
       </div>
     )
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">Profile not found</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="card max-w-md w-full text-center">
+          <div className="text-gray-600 mb-4">Profile not found</div>
+          {showDebug && (
+            <div className="text-xs bg-red-50 p-3 rounded border border-red-200 text-left">
+              <div><strong>Debug Info:</strong></div>
+              <div>authLoading: {String(authLoading)}</div>
+              <div>profileLoading: {String(profileLoading)}</div>
+              <div>user: {user ? 'YES ✓' : 'NO ✗'}</div>
+              <div>user.id: {user?.id || 'null'}</div>
+              <div>profile: NULL</div>
+            </div>
+          )}
+        </div>
       </div>
     )
   }
