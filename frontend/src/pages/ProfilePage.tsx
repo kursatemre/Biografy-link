@@ -5,6 +5,7 @@ import { useLinks } from '@/hooks/useLinks'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useTheme } from '@/hooks/useThemes'
 import { Link2 } from 'lucide-react'
+import SEO from '@/components/SEO'
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>()
@@ -66,15 +67,30 @@ export default function ProfilePage() {
     )
   }
 
+  const siteUrl = window.location.origin
+  const profileUrl = `${siteUrl}/${profile.username}`
+  const profileTitle = profile.display_name || `@${profile.username}`
+  const profileDescription = profile.bio || `Check out @${profile.username}'s links on Biografy Link`
+  const profileImage = profile.avatar_url || `${siteUrl}/default-avatar.png`
+
   return (
-    <div
-      className="min-h-screen py-6 sm:py-8 px-4"
-      style={{
-        background: theme?.config.backgroundColor || '#ffffff',
-        color: theme?.config.textColor || '#1f2937',
-        fontFamily: theme?.config.fontFamily || 'Inter, sans-serif',
-      }}
-    >
+    <>
+      <SEO
+        title={profileTitle}
+        description={profileDescription}
+        image={profileImage}
+        url={profileUrl}
+        type="profile"
+        username={profile.username}
+      />
+      <div
+        className="min-h-screen py-6 sm:py-8 px-4"
+        style={{
+          background: theme?.config.backgroundColor || '#ffffff',
+          color: theme?.config.textColor || '#1f2937',
+          fontFamily: theme?.config.fontFamily || 'Inter, sans-serif',
+        }}
+      >
       <div className="max-w-2xl mx-auto">
         {/* Profile Header */}
         <div className="text-center mb-6 sm:mb-8">
@@ -140,5 +156,6 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
+    </>
   )
 }
