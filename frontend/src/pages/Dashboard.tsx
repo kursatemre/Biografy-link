@@ -7,7 +7,7 @@ import { useLinks } from '@/hooks/useLinks'
 
 export default function Dashboard() {
   const navigate = useNavigate()
-  const { user, signOut } = useAuth()
+  const { user, signOut, loading: authLoading } = useAuth()
   const { profile, loading: profileLoading } = useProfile(user?.id)
   const { links, loading: linksLoading, addLink, updateLink, deleteLink } = useLinks(profile?.id)
 
@@ -18,10 +18,17 @@ export default function Dashboard() {
 
   // Redirect to auth if not logged in
   useEffect(() => {
-    if (!user && !profileLoading) {
+    console.log('🔍 Dashboard Debug:')
+    console.log('  - authLoading:', authLoading)
+    console.log('  - user:', user)
+    console.log('  - profileLoading:', profileLoading)
+    console.log('  - profile:', profile)
+
+    if (!authLoading && !user) {
+      console.log('❌ No user found, redirecting to /auth')
       navigate('/auth')
     }
-  }, [user, profileLoading, navigate])
+  }, [user, authLoading, profileLoading, profile, navigate])
 
   const handleSignOut = async () => {
     await signOut()
@@ -81,10 +88,18 @@ export default function Dashboard() {
     })
   }
 
-  if (profileLoading || !profile) {
+  if (authLoading || profileLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-gray-600">Loading...</div>
+      </div>
+    )
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Profile not found</div>
       </div>
     )
   }
