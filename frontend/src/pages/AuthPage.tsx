@@ -36,30 +36,12 @@ export default function AuthPage() {
           return
         }
 
-        const { data: authData, error } = await signUp(email, password, username)
+        const { error } = await signUp(email, password, username)
         if (error) {
           setError(error.message)
-        } else if (authData?.user) {
-          // Create profile after successful signup
-          const { supabase } = await import('@/lib/supabase')
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .insert({
-              id: authData.user.id,
-              username: username.toLowerCase().trim(),
-              display_name: username,
-            })
-
-          if (profileError) {
-            // If username already exists, show error
-            if (profileError.code === '23505') {
-              setError('Username already taken')
-            } else {
-              setError('Failed to create profile: ' + profileError.message)
-            }
-          } else {
-            navigate('/dashboard')
-          }
+        } else {
+          // Profile will be created automatically by database trigger
+          navigate('/dashboard')
         }
       }
     } catch (err) {
