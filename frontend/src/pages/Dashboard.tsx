@@ -10,7 +10,7 @@ import { useThemes } from '@/hooks/useThemes'
 export default function Dashboard() {
   const navigate = useNavigate()
   const { user, signOut, loading: authLoading } = useAuth()
-  const { profile, loading: profileLoading, updateProfile } = useProfile(user?.id)
+  const { profile, loading: profileLoading, updateProfile, uploadAvatar, updateUsername } = useProfile(user?.id)
   const { links, loading: linksLoading, addLink, updateLink, deleteLink, reorderLinks } = useLinks(profile?.id, true)
   const { stats, loading: analyticsLoading } = useProfileAnalytics(profile?.id)
   const { themes, loading: themesLoading } = useThemes()
@@ -24,10 +24,12 @@ export default function Dashboard() {
     display_name: '',
     bio: '',
     avatar_url: '',
+    username: '',
     theme_id: ''
   })
   const [submitting, setSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
   // Update settings data when profile loads
   useEffect(() => {
@@ -36,6 +38,7 @@ export default function Dashboard() {
         display_name: profile.display_name || '',
         bio: profile.bio || '',
         avatar_url: profile.avatar_url || '',
+        username: profile.username || '',
         theme_id: profile.theme_id || '',
       })
     }
@@ -53,17 +56,70 @@ export default function Dashboard() {
     navigate('/auth')
   }
 
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file')
+      return
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Image size must be less than 2MB')
+      return
+    }
+
+    setUploadingAvatar(true)
+
+    const result = await uploadAvatar(file)
+
+    if (result.error) {
+      alert(`Avatar upload failed: ${result.error.message}`)
+    } else {
+      setSuccessMessage('Avatar uploaded successfully! ✓')
+      setTimeout(() => setSuccessMessage(''), 3000)
+    }
+
+    setUploadingAvatar(false)
+  }
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
     setSuccessMessage('')
 
-    const { error } = await updateProfile(settingsData)
+    // Check if username changed
+    const usernameChanged = profile?.username !== settingsData.username
+
+    if (usernameChanged && settingsData.username) {
+      // Validate username format (alphanumeric and underscores only)
+      if (!/^[a-zA-Z0-9_]+$/.test(settingsData.username)) {
+        alert('Username can only contain letters, numbers, and underscores')
+        setSubmitting(false)
+        return
+      }
+
+      const result = await updateUsername(settingsData.username)
+      if (result.error) {
+        alert(`Username update failed: ${result.error.message}`)
+        setSubmitting(false)
+        return
+      }
+    }
+
+    // Update other profile fields (excluding username as it's already updated)
+    const { username, ...otherUpdates } = settingsData
+    const { error } = await updateProfile(otherUpdates)
 
     if (!error) {
       setShowSettings(false)
       setSuccessMessage('Profile updated successfully! ✓')
       setTimeout(() => setSuccessMessage(''), 3000)
+    } else {
+      alert(`Profile update failed: ${error.message}`)
     }
     setSubmitting(false)
   }
@@ -445,6 +501,60 @@ export default function Dashboard() {
             </div>
 
             <form onSubmit={handleUpdateProfile} className="space-y-4">
+              {/* Avatar Upload */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Profile Picture
+                </label>
+                <div className="flex items-center gap-4">
+                  {profile?.avatar_url ? (
+                    <img
+                      src={profile.avatar_url}
+                      alt="Avatar"
+                      className="w-16 h-16 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                      {profile?.username?.[0]?.toUpperCase() || '?'}
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      disabled={uploadingAvatar}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      {uploadingAvatar ? 'Uploading...' : 'PNG, JPG up to 2MB'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Username */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Username
+                </label>
+                <div className="flex items-center">
+                  <span className="text-gray-500 mr-1">@</span>
+                  <input
+                    type="text"
+                    className="input flex-1"
+                    placeholder="yourusername"
+                    value={settingsData.username}
+                    onChange={(e) => setSettingsData({ ...settingsData, username: e.target.value.toLowerCase() })}
+                    disabled={submitting}
+                    pattern="[a-zA-Z0-9_]+"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Only letters, numbers, and underscores
+                </p>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Display Name

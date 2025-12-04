@@ -53,11 +53,84 @@ export function useProfile(userId?: string) {
     }
   }
 
+  const uploadAvatar = async (file: File) => {
+    if (!userId) return { error: new Error('No user ID'), url: null }
+
+    try {
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${userId}/${Date.now()}.${fileExt}`
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true,
+        })
+
+      if (uploadError) throw uploadError
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName)
+
+      const avatarUrl = urlData.publicUrl
+
+      // Update profile with new avatar URL
+      await updateProfile({ avatar_url: avatarUrl })
+
+      return { url: avatarUrl, error: null }
+    } catch (err) {
+      return { url: null, error: err as Error }
+    }
+  }
+
+  const updateUsername = async (newUsername: string) => {
+    if (!userId) return { error: new Error('No user ID'), success: false }
+
+    try {
+      // Check if username is already taken
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('username', newUsername)
+        .neq('id', userId)
+        .single()
+
+      if (existingProfile) {
+        return { error: new Error('Username already taken'), success: false }
+      }
+
+      // Update username
+      const result = await updateProfile({ username: newUsername })
+
+      if (result.error) {
+        return { error: result.error, success: false }
+      }
+
+      return { error: null, success: true }
+    } catch (err: any) {
+      // PGRST116 means no rows found, which is good (username is available)
+      if (err.code === 'PGRST116') {
+        const result = await updateProfile({ username: newUsername })
+        if (result.error) {
+          return { error: result.error, success: false }
+        }
+        return { error: null, success: true }
+      }
+      return { error: err as Error, success: false }
+    }
+  }
+
   return {
     profile,
     loading,
     error,
     updateProfile,
+    uploadAvatar,
+    updateUsername,
   }
 }
 
