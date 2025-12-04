@@ -22,6 +22,7 @@ export default function Dashboard() {
     avatar_url: ''
   })
   const [submitting, setSubmitting] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
 
   // Update settings data when profile loads
   useEffect(() => {
@@ -49,11 +50,14 @@ export default function Dashboard() {
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
+    setSuccessMessage('')
 
     const { error } = await updateProfile(settingsData)
 
     if (!error) {
       setShowSettings(false)
+      setSuccessMessage('Profile updated successfully! ✓')
+      setTimeout(() => setSuccessMessage(''), 3000)
     }
     setSubmitting(false)
   }
@@ -63,7 +67,9 @@ export default function Dashboard() {
     if (!profile?.id) return
 
     setSubmitting(true)
-    const { error } = await addLink({
+    setSuccessMessage('')
+
+    const { error, data } = await addLink({
       profile_id: profile.id,
       title: formData.title,
       url: formData.url,
@@ -72,9 +78,13 @@ export default function Dashboard() {
       position: links.length,
     })
 
-    if (!error) {
+    if (!error && data) {
       setShowAddModal(false)
       setFormData({ title: '', url: '', icon: '' })
+      setSuccessMessage(`Link "${formData.title}" added successfully! ✓`)
+      setTimeout(() => setSuccessMessage(''), 3000)
+    } else if (error) {
+      alert(`Error: ${error.message}`)
     }
     setSubmitting(false)
   }
@@ -84,6 +94,8 @@ export default function Dashboard() {
     if (!editingLink) return
 
     setSubmitting(true)
+    setSuccessMessage('')
+
     const { error } = await updateLink(editingLink.id, {
       title: formData.title,
       url: formData.url,
@@ -93,13 +105,26 @@ export default function Dashboard() {
     if (!error) {
       setEditingLink(null)
       setFormData({ title: '', url: '', icon: '' })
+      setSuccessMessage('Link updated successfully! ✓')
+      setTimeout(() => setSuccessMessage(''), 3000)
+    } else {
+      alert(`Error: ${error.message}`)
     }
     setSubmitting(false)
   }
 
   const handleDeleteLink = async (id: string) => {
     if (!confirm('Are you sure you want to delete this link?')) return
-    await deleteLink(id)
+    setSuccessMessage('')
+
+    const { error } = await deleteLink(id)
+
+    if (!error) {
+      setSuccessMessage('Link deleted successfully! ✓')
+      setTimeout(() => setSuccessMessage(''), 3000)
+    } else {
+      alert(`Error: ${error.message}`)
+    }
   }
 
   const openEditModal = (link: any) => {
@@ -165,6 +190,15 @@ export default function Dashboard() {
           </div>
         </div>
       </header>
+
+      {/* Success Message */}
+      {successMessage && (
+        <div className="container mx-auto px-4 pt-4">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700 text-center">
+            {successMessage}
+          </div>
+        </div>
+      )}
 
       <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
