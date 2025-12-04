@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useProfileByUsername } from '@/hooks/useProfile'
 import { useLinks } from '@/hooks/useLinks'
 import { useAnalytics } from '@/hooks/useAnalytics'
+import { useTheme } from '@/hooks/useThemes'
 import { Link2 } from 'lucide-react'
 
 export default function ProfilePage() {
@@ -10,6 +11,7 @@ export default function ProfilePage() {
   const { profile, loading: profileLoading, error: profileError } = useProfileByUsername(username)
   const { links, loading: linksLoading } = useLinks(profile?.id)
   const { trackProfileView, trackLinkClick } = useAnalytics()
+  const { theme, loading: themeLoading } = useTheme(profile?.theme_id || undefined)
 
   // Track profile view when page loads
   useEffect(() => {
@@ -26,7 +28,20 @@ export default function ProfilePage() {
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 
-  if (profileLoading) {
+  const getButtonStyle = () => {
+    if (!theme) return 'rounded-xl'
+    switch (theme.config.buttonStyle) {
+      case 'pill':
+        return 'rounded-full'
+      case 'square':
+        return 'rounded-md'
+      case 'rounded':
+      default:
+        return 'rounded-xl'
+    }
+  }
+
+  if (profileLoading || themeLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-gray-600">Loading...</div>
@@ -52,7 +67,14 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-purple-50 py-6 sm:py-8 px-4">
+    <div
+      className="min-h-screen py-6 sm:py-8 px-4"
+      style={{
+        background: theme?.config.backgroundColor || '#ffffff',
+        color: theme?.config.textColor || '#1f2937',
+        fontFamily: theme?.config.fontFamily || 'Inter, sans-serif',
+      }}
+    >
       <div className="max-w-2xl mx-auto">
         {/* Profile Header */}
         <div className="text-center mb-6 sm:mb-8">
@@ -91,7 +113,12 @@ export default function ProfilePage() {
               <button
                 key={link.id}
                 onClick={() => handleLinkClick(link.id, link.url)}
-                className="block w-full py-3 sm:py-4 px-4 sm:px-6 bg-white hover:bg-gray-50 rounded-xl shadow-sm border border-gray-200 transition-all hover:scale-105 hover:shadow-md active:scale-100"
+                className={`block w-full py-3 sm:py-4 px-4 sm:px-6 shadow-sm border transition-all hover:scale-105 hover:shadow-md active:scale-100 ${getButtonStyle()}`}
+                style={{
+                  backgroundColor: theme?.config.buttonColor || '#ffffff',
+                  color: theme?.config.buttonTextColor || '#1f2937',
+                  borderColor: theme?.config.buttonColor || '#e5e7eb',
+                }}
               >
                 <div className="flex items-center justify-center gap-2 sm:gap-3">
                   {link.icon && <span className="text-xl sm:text-2xl">{link.icon}</span>}

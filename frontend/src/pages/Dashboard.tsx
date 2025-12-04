@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useProfile } from '@/hooks/useProfile'
 import { useLinks } from '@/hooks/useLinks'
 import { useProfileAnalytics } from '@/hooks/useAnalytics'
+import { useThemes } from '@/hooks/useThemes'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -12,6 +13,7 @@ export default function Dashboard() {
   const { profile, loading: profileLoading, updateProfile } = useProfile(user?.id)
   const { links, loading: linksLoading, addLink, updateLink, deleteLink } = useLinks(profile?.id)
   const { stats, loading: analyticsLoading } = useProfileAnalytics(profile?.id)
+  const { themes, loading: themesLoading } = useThemes()
 
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingLink, setEditingLink] = useState<any>(null)
@@ -21,7 +23,8 @@ export default function Dashboard() {
   const [settingsData, setSettingsData] = useState({
     display_name: '',
     bio: '',
-    avatar_url: ''
+    avatar_url: '',
+    theme_id: ''
   })
   const [submitting, setSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
@@ -33,6 +36,7 @@ export default function Dashboard() {
         display_name: profile.display_name || '',
         bio: profile.bio || '',
         avatar_url: profile.avatar_url || '',
+        theme_id: profile.theme_id || '',
       })
     }
   }, [profile])
@@ -385,6 +389,39 @@ export default function Dashboard() {
                 <p className="text-xs text-gray-500 mt-1">
                   Paste a link to your profile picture
                 </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Theme
+                </label>
+                {themesLoading ? (
+                  <p className="text-sm text-gray-500">Loading themes...</p>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    {themes.map((theme) => (
+                      <button
+                        key={theme.id}
+                        type="button"
+                        onClick={() => setSettingsData({ ...settingsData, theme_id: theme.id })}
+                        disabled={submitting}
+                        className={`p-3 border-2 rounded-lg text-left transition-all ${
+                          settingsData.theme_id === theme.id
+                            ? 'border-primary-500 bg-primary-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        } ${theme.is_premium ? 'relative' : ''}`}
+                      >
+                        <div className="font-medium text-sm">{theme.name}</div>
+                        <div className="text-xs text-gray-500 mt-1">{theme.description}</div>
+                        {theme.is_premium && (
+                          <span className="absolute top-1 right-1 bg-yellow-100 text-yellow-800 text-xs px-1.5 py-0.5 rounded">
+                            Pro
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3">
