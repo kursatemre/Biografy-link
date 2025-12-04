@@ -1,12 +1,30 @@
 import { useParams } from 'react-router-dom'
+import { useEffect } from 'react'
 import { useProfileByUsername } from '@/hooks/useProfile'
 import { useLinks } from '@/hooks/useLinks'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { Link2 } from 'lucide-react'
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>()
   const { profile, loading: profileLoading, error: profileError } = useProfileByUsername(username)
   const { links, loading: linksLoading } = useLinks(profile?.id)
+  const { trackProfileView, trackLinkClick } = useAnalytics()
+
+  // Track profile view when page loads
+  useEffect(() => {
+    if (profile?.id) {
+      trackProfileView(profile.id)
+    }
+  }, [profile?.id])
+
+  const handleLinkClick = (linkId: string, url: string) => {
+    if (profile?.id) {
+      trackLinkClick(profile.id, linkId)
+    }
+    // Open link in new tab
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
 
   if (profileLoading) {
     return (
@@ -70,18 +88,16 @@ export default function ProfilePage() {
         ) : (
           <div className="space-y-3 sm:space-y-4 max-w-lg mx-auto">
             {links.map((link) => (
-              <a
+              <button
                 key={link.id}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
+                onClick={() => handleLinkClick(link.id, link.url)}
                 className="block w-full py-3 sm:py-4 px-4 sm:px-6 bg-white hover:bg-gray-50 rounded-xl shadow-sm border border-gray-200 transition-all hover:scale-105 hover:shadow-md active:scale-100"
               >
                 <div className="flex items-center justify-center gap-2 sm:gap-3">
                   {link.icon && <span className="text-xl sm:text-2xl">{link.icon}</span>}
                   <span className="font-medium text-base sm:text-lg">{link.title}</span>
                 </div>
-              </a>
+              </button>
             ))}
           </div>
         )}

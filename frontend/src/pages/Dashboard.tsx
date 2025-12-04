@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfile } from '@/hooks/useProfile'
 import { useLinks } from '@/hooks/useLinks'
+import { useProfileAnalytics } from '@/hooks/useAnalytics'
 
 export default function Dashboard() {
   const navigate = useNavigate()
   const { user, signOut, loading: authLoading } = useAuth()
   const { profile, loading: profileLoading, updateProfile } = useProfile(user?.id)
   const { links, loading: linksLoading, addLink, updateLink, deleteLink } = useLinks(profile?.id)
+  const { stats, loading: analyticsLoading } = useProfileAnalytics(profile?.id)
 
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingLink, setEditingLink] = useState<any>(null)
@@ -244,7 +246,9 @@ export default function Dashboard() {
               <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t">
                 <div className="grid grid-cols-2 gap-3 sm:gap-4 text-center">
                   <div>
-                    <div className="text-xl sm:text-2xl font-bold text-primary-600">0</div>
+                    <div className="text-xl sm:text-2xl font-bold text-primary-600">
+                      {analyticsLoading ? '...' : stats.totalViews}
+                    </div>
                     <div className="text-xs sm:text-sm text-gray-600">Views</div>
                   </div>
                   <div>
@@ -421,12 +425,16 @@ export default function Dashboard() {
 
             <div className="space-y-4">
               <div className="card bg-gradient-to-br from-primary-50 to-purple-50 border-primary-100">
-                <div className="text-3xl font-bold text-primary-600">0</div>
+                <div className="text-3xl font-bold text-primary-600">
+                  {analyticsLoading ? '...' : stats.totalViews}
+                </div>
                 <div className="text-sm text-gray-600 mt-1">Total Profile Views</div>
               </div>
 
               <div className="card bg-gradient-to-br from-green-50 to-emerald-50 border-green-100">
-                <div className="text-3xl font-bold text-green-600">0</div>
+                <div className="text-3xl font-bold text-green-600">
+                  {analyticsLoading ? '...' : stats.totalClicks}
+                </div>
                 <div className="text-sm text-gray-600 mt-1">Total Link Clicks</div>
               </div>
 
@@ -435,10 +443,17 @@ export default function Dashboard() {
                 <div className="text-sm text-gray-600 mt-1">Active Links</div>
               </div>
 
-              <div className="text-center text-sm text-gray-500 mt-6">
-                <p>Analytics tracking coming soon! 📊</p>
-                <p className="mt-1">We'll track views and clicks on your links.</p>
-              </div>
+              {stats.totalViews > 0 || stats.totalClicks > 0 ? (
+                <div className="text-center text-sm text-gray-500 mt-6">
+                  <p>✅ Analytics tracking is active!</p>
+                  <p className="mt-1">We're tracking views and clicks on your links.</p>
+                </div>
+              ) : (
+                <div className="text-center text-sm text-gray-500 mt-6">
+                  <p>📊 Analytics ready!</p>
+                  <p className="mt-1">Visit your profile page to start tracking.</p>
+                </div>
+              )}
             </div>
 
             <button
