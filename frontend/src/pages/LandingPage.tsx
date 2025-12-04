@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useState, FormEvent } from 'react'
-import { Link2, Palette, BarChart3, Sparkles, Eye, MousePointerClick, Zap, CheckCircle2, X } from 'lucide-react'
+import { Link2, Palette, BarChart3, Eye, MousePointerClick, Zap, CheckCircle2, X } from 'lucide-react'
 import { useNewsletter } from '@/hooks/useNewsletter'
 
 export default function LandingPage() {
