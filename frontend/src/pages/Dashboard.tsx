@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link2, Plus, Settings, BarChart3, LogOut } from 'lucide-react'
 
 export default function Dashboard() {
-  const [links, setLinks] = useState([
+  const [links] = useState([
     { id: '1', title: 'My Website', url: 'https://example.com', is_active: true },
     { id: '2', title: 'Instagram', url: 'https://instagram.com/username', is_active: true },
   ])

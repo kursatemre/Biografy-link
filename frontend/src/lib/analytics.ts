@@ -6,7 +6,7 @@ export async function trackPageView(profileId: string) {
       profile_id: profileId,
       event_type: 'view',
       user_agent: navigator.userAgent,
-    })
+    } as any)
   } catch (error) {
     console.error('Error tracking page view:', error)
   }
@@ -20,7 +20,7 @@ export async function trackLinkClick(profileId: string, linkId: string, url: str
       link_id: linkId,
       event_type: 'click',
       user_agent: navigator.userAgent,
-    })
+    } as any)
 
     // Open link
     window.open(url, '_blank', 'noopener,noreferrer')
@@ -36,7 +36,7 @@ export async function getAnalyticsSummary(profileId: string, days: number = 30) 
     const { data, error } = await supabase.rpc('get_analytics_summary', {
       profile_id_param: profileId,
       days_param: days,
-    })
+    } as any)
 
     if (error) throw error
     return data?.[0] || null
@@ -51,7 +51,7 @@ export async function getLinkClicks(profileId: string, days: number = 30) {
     const { data, error } = await supabase.rpc('get_link_clicks', {
       profile_id_param: profileId,
       days_param: days,
-    })
+    } as any)
 
     if (error) throw error
     return data || []

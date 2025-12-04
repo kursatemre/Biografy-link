@@ -40,13 +40,13 @@ export function useProfile(userId?: string) {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .update(updates)
+        .update(updates as any)
         .eq('id', userId)
         .select()
         .single()
 
       if (error) throw error
-      setProfile(data)
+      setProfile(data as Profile)
       return { data, error: null }
     } catch (err) {
       return { data: null, error: err as Error }

@@ -60,12 +60,12 @@ export function useLinks(profileId?: string) {
     try {
       const { data, error } = await supabase
         .from('links')
-        .insert(link)
+        .insert(link as any)
         .select()
         .single()
 
       if (error) throw error
-      setLinks((prev) => [...prev, data].sort((a, b) => a.position - b.position))
+      setLinks((prev) => [...prev, data as Link].sort((a, b) => a.position - b.position))
       return { data, error: null }
     } catch (err) {
       return { data: null, error: err as Error }
@@ -76,14 +76,14 @@ export function useLinks(profileId?: string) {
     try {
       const { data, error } = await supabase
         .from('links')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single()
 
       if (error) throw error
       setLinks((prev) =>
-        prev.map((link) => (link.id === id ? data : link))
+        prev.map((link) => (link.id === id ? (data as Link) : link))
       )
       return { data, error: null }
     } catch (err) {
@@ -114,7 +114,7 @@ export function useLinks(profileId?: string) {
       for (const update of updates) {
         await supabase
           .from('links')
-          .update({ position: update.position })
+          .update({ position: update.position } as any)
           .eq('id', update.id)
       }
 
