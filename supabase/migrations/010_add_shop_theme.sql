@@ -12,8 +12,4 @@ VALUES (
     "fontFamily": "Inter, sans-serif"
   }'::jsonb,
   false
-)
-ON CONFLICT (name) DO UPDATE SET
-  description = EXCLUDED.description,
-  config = EXCLUDED.config,
-  is_premium = EXCLUDED.is_premium;
+);
