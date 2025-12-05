@@ -17,7 +17,7 @@ export default function SEO({
   type = 'website',
   username,
 }: SEOProps) {
-  const fullTitle = `${title} | Biografy Link`
+  const fullTitle = `${title} | TheLinker`
   const defaultImage = 'https://thelinker-three.vercel.app/og-image.png'
   const imageUrl = image || defaultImage
   const canonicalUrl = url || window.location.href
@@ -36,7 +36,7 @@ export default function SEO({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={imageUrl} />
-      <meta property="og:site_name" content="Biografy Link" />
+      <meta property="og:site_name" content="TheLinker" />
       {username && <meta property="profile:username" content={username} />}
 
       {/* Twitter */}
@@ -49,7 +49,7 @@ export default function SEO({
       {/* Additional SEO */}
       <meta name="robots" content="index, follow" />
       <meta name="language" content="Turkish" />
-      <meta name="author" content={username || 'Biografy Link'} />
+      <meta name="author" content={username || 'TheLinker'} />
     </Helmet>
   )
 }

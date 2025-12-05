@@ -1,4 +1,4 @@
-# 🔗 Biografy Link - Free Link-in-Bio Platform
+# 🔗 TheLinker - Free Link-in-Bio Platform
 
 Modern, fully customizable link-in-bio platform for creators, businesses, and professionals. Create your personalized landing page with multiple links, stunning themes, and powerful analytics - **100% FREE**.
 

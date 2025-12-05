@@ -420,7 +420,7 @@ export default function LandingPage() {
         <div className="mt-20 sm:mt-24 md:mt-32">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Neden Biografy Link?
+              Neden TheLinker?
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               İster influencer, ister e-ticaret sahibi, ister içerik üretici olun,

@@ -282,8 +282,11 @@ export default function Dashboard() {
         <div className="container mx-auto px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Link2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600" />
-              <span className="text-lg sm:text-xl font-bold">Biografy Link</span>
+              <div className="relative">
+                <Link2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600" />
+                <div className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-500 rounded-full"></div>
+              </div>
+              <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">TheLinker</span>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
               <a
