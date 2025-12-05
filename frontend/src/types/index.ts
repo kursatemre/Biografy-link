@@ -24,6 +24,8 @@ export interface Link {
   icon: string | null
   color: string | null
   text_color: string | null
+  image_url: string | null
+  description: string | null
   position: number
   is_active: boolean
   created_at: string

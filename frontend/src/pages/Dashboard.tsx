@@ -19,7 +19,7 @@ export default function Dashboard() {
   const [editingLink, setEditingLink] = useState<any>(null)
   const [showSettings, setShowSettings] = useState(false)
   const [showAnalytics, setShowAnalytics] = useState(false)
-  const [formData, setFormData] = useState({ title: '', url: '', icon: '', color: '', text_color: '' })
+  const [formData, setFormData] = useState({ title: '', url: '', icon: '', color: '', text_color: '', image_url: '', description: '' })
   const [settingsData, setSettingsData] = useState({
     display_name: '',
     bio: '',
@@ -148,13 +148,15 @@ export default function Dashboard() {
       icon: formData.icon || null,
       color: formData.color || null,
       text_color: formData.text_color || null,
+      image_url: formData.image_url || null,
+      description: formData.description || null,
       is_active: true,
       position: links.length,
     })
 
     if (!error && data) {
       setShowAddModal(false)
-      setFormData({ title: '', url: '', icon: '', color: '', text_color: '' })
+      setFormData({ title: '', url: '', icon: '', color: '', text_color: '', image_url: '', description: '' })
       setSuccessMessage(`Link "${formData.title}" added successfully! ✓`)
       setTimeout(() => setSuccessMessage(''), 3000)
     } else if (error) {
@@ -176,11 +178,13 @@ export default function Dashboard() {
       icon: formData.icon || null,
       color: formData.color || null,
       text_color: formData.text_color || null,
+      image_url: formData.image_url || null,
+      description: formData.description || null,
     })
 
     if (!error) {
       setEditingLink(null)
-      setFormData({ title: '', url: '', icon: '', color: '', text_color: '' })
+      setFormData({ title: '', url: '', icon: '', color: '', text_color: '', image_url: '', description: '' })
       setSuccessMessage('Link updated successfully! ✓')
       setTimeout(() => setSuccessMessage(''), 3000)
     } else {
@@ -250,6 +254,8 @@ export default function Dashboard() {
       icon: link.icon || '',
       color: link.color || '',
       text_color: link.text_color || '',
+      image_url: link.image_url || '',
+      description: link.description || '',
     })
   }
 
@@ -850,7 +856,7 @@ export default function Dashboard() {
                 onClick={() => {
                   setShowAddModal(false)
                   setEditingLink(null)
-                  setFormData({ title: '', url: '', icon: '', color: '', text_color: '' })
+                  setFormData({ title: '', url: '', icon: '', color: '', text_color: '', image_url: '', description: '' })
                 }}
                 className="p-1 hover:bg-gray-100 rounded"
               >
@@ -959,13 +965,47 @@ export default function Dashboard() {
                 </p>
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Product Image URL (optional, for Shop theme)
+                </label>
+                <input
+                  type="text"
+                  className="input"
+                  placeholder="https://example.com/product.jpg"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  disabled={submitting}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Image URL for product cards in Shop theme. Leave empty to use icon/emoji
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description (optional, for Shop theme)
+                </label>
+                <textarea
+                  className="input resize-none"
+                  placeholder="Product description for Shop theme..."
+                  rows={3}
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  disabled={submitting}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Product description shown in Shop theme product cards
+                </p>
+              </div>
+
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={() => {
                     setShowAddModal(false)
                     setEditingLink(null)
-                    setFormData({ title: '', url: '', icon: '', color: '', text_color: ''})
+                    setFormData({ title: '', url: '', icon: '', color: '', text_color: '', image_url: '', description: ''})
                   }}
                   className="flex-1 btn btn-secondary"
                   disabled={submitting}

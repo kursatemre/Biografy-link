@@ -187,26 +187,40 @@ export default function ProfilePage() {
                       borderColor: buttonColor,
                     }}
                   >
-                    <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="flex items-start gap-3 sm:gap-4">
                       {/* Left: Product Image */}
-                      <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-white/20 flex items-center justify-center overflow-hidden">
-                        {link.icon ? (
-                          <span className="text-3xl sm:text-4xl">{link.icon}</span>
-                        ) : (
-                          <SocialIcon
-                            className="text-3xl sm:text-4xl"
-                            style={{ color: socialColor }}
+                      <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-white/10">
+                        {link.image_url ? (
+                          <img
+                            src={link.image_url}
+                            alt={link.title}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              // Fallback to icon if image fails to load
+                              e.currentTarget.style.display = 'none'
+                            }}
                           />
+                        ) : link.icon ? (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-3xl sm:text-4xl">{link.icon}</span>
+                          </div>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <SocialIcon
+                              className="text-3xl sm:text-4xl"
+                              style={{ color: socialColor }}
+                            />
+                          </div>
                         )}
                       </div>
                       {/* Right: Product Name and Description */}
-                      <div className="flex-1 text-left">
-                        <div className="font-semibold text-base sm:text-lg mb-0.5">
+                      <div className="flex-grow min-w-0">
+                        <h2 className="font-bold text-base sm:text-lg mb-1 leading-snug">
                           {link.title}
-                        </div>
-                        <div className="text-xs sm:text-sm opacity-80 line-clamp-1">
-                          Click to view product
-                        </div>
+                        </h2>
+                        <p className="text-sm text-current opacity-90 mt-1 line-clamp-2">
+                          {link.description || 'Click to view product'}
+                        </p>
                       </div>
                     </div>
                   </button>
