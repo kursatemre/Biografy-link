@@ -6,6 +6,7 @@ import { useAnalytics } from '@/hooks/useAnalytics'
 import { useTheme } from '@/hooks/useThemes'
 import { Link2 } from 'lucide-react'
 import SEO from '@/components/SEO'
+import { getSocialIcon, getSocialColor } from '@/utils/socialMedia'
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>()
@@ -125,23 +126,35 @@ export default function ProfilePage() {
           </div>
         ) : (
           <div className="space-y-3 sm:space-y-4 max-w-lg mx-auto">
-            {links.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => handleLinkClick(link.id, link.url)}
-                className={`block w-full py-3 sm:py-4 px-4 sm:px-6 shadow-sm border transition-all hover:scale-105 hover:shadow-md active:scale-100 ${getButtonStyle()}`}
-                style={{
-                  backgroundColor: theme?.config.buttonColor || '#ffffff',
-                  color: theme?.config.buttonTextColor || '#1f2937',
-                  borderColor: theme?.config.buttonColor || '#e5e7eb',
-                }}
-              >
-                <div className="flex items-center justify-center gap-2 sm:gap-3">
-                  {link.icon && <span className="text-xl sm:text-2xl">{link.icon}</span>}
-                  <span className="font-medium text-base sm:text-lg">{link.title}</span>
-                </div>
-              </button>
-            ))}
+            {links.map((link) => {
+              const SocialIcon = getSocialIcon(link.url)
+              const socialColor = getSocialColor(link.url)
+
+              return (
+                <button
+                  key={link.id}
+                  onClick={() => handleLinkClick(link.id, link.url)}
+                  className={`block w-full py-3 sm:py-4 px-4 sm:px-6 shadow-sm border transition-all hover:scale-105 hover:shadow-md active:scale-100 ${getButtonStyle()}`}
+                  style={{
+                    backgroundColor: theme?.config.buttonColor || '#ffffff',
+                    color: theme?.config.buttonTextColor || '#1f2937',
+                    borderColor: theme?.config.buttonColor || '#e5e7eb',
+                  }}
+                >
+                  <div className="flex items-center justify-center gap-2 sm:gap-3">
+                    {link.icon ? (
+                      <span className="text-xl sm:text-2xl">{link.icon}</span>
+                    ) : (
+                      <SocialIcon
+                        className="text-xl sm:text-2xl"
+                        style={{ color: socialColor }}
+                      />
+                    )}
+                    <span className="font-medium text-base sm:text-lg">{link.title}</span>
+                  </div>
+                </button>
+              )
+            })}
           </div>
         )}
 
