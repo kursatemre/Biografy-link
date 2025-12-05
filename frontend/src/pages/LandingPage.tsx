@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useState, FormEvent } from 'react'
 import { Link2, Palette, BarChart3, Eye, MousePointerClick, Zap, CheckCircle2, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useNewsletter } from '@/hooks/useNewsletter'
+import SEO from '@/components/SEO'
 
 const demoThemes = [
   {
@@ -168,8 +169,51 @@ export default function LandingPage() {
     }
   }
 
+  // Structured Data for SEO (Schema.org)
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "TheLinker",
+    "url": "https://thelinker-three.vercel.app",
+    "description": "Sosyal medya biyografin için profesyonel link-in-bio sayfası oluştur. Instagram, TikTok, YouTube için tek link. 6 tema, sınırsız link, analitik. %100 Ücretsiz!",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "TRY"
+    },
+    "featureList": [
+      "6 Profesyonel Tema",
+      "Sınırsız Link Ekleme",
+      "Detaylı Analitik",
+      "Özel Renkler",
+      "Avatar Yükleme",
+      "Mobil Uyumlu",
+      "SEO Optimizasyonu"
+    ],
+    "creator": {
+      "@type": "Organization",
+      "name": "OrionSoft.dev",
+      "url": "https://orionsoft.dev"
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-purple-50">
+      <SEO
+        title="Ana Sayfa"
+        description="Sosyal medya biyografin için profesyonel link-in-bio sayfası oluştur. Instagram, TikTok, YouTube için tek link. 6 tema, sınırsız link, analitik. %100 Ücretsiz!"
+        keywords={[
+          'linktree türkiye',
+          'bio link ücretsiz',
+          'sosyal medya link toplama',
+          'instagram link ekleme',
+          'creator tools',
+          'influencer araçları'
+        ]}
+        structuredData={structuredData}
+      />
       {/* Header */}
       <header className="container mx-auto px-4 py-4 sm:py-6">
         <nav className="flex items-center justify-between">

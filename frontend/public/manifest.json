@@ -1,0 +1,21 @@
+{
+  "name": "TheLinker - Link-in-Bio Platform",
+  "short_name": "TheLinker",
+  "description": "Tüm linklerinizi tek bir sayfada birleştirin. Profesyonel link-in-bio platformu.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "social", "business"],
+  "lang": "tr",
+  "dir": "ltr"
+}

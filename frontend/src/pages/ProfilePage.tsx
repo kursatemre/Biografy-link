@@ -75,6 +75,40 @@ export default function ProfilePage() {
   const profileDescription = profile.bio || `Check out @${profile.username}'s links on OrionSoft.dev`
   const profileImage = profile.avatar_url || `${siteUrl}/default-avatar.png`
 
+  // Structured Data for Profile (Schema.org Person/ProfilePage)
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "mainEntity": {
+      "@type": "Person",
+      "name": profile.display_name || profile.username,
+      "alternateName": `@${profile.username}`,
+      "description": profile.bio,
+      "image": profileImage,
+      "url": profileUrl,
+      "sameAs": links
+        .filter((link: { is_active: boolean; url: string }) =>
+          link.is_active && (
+            link.url.includes('instagram.com') || link.url.includes('twitter.com') ||
+            link.url.includes('linkedin.com') || link.url.includes('youtube.com') ||
+            link.url.includes('tiktok.com') || link.url.includes('facebook.com')
+          )
+        )
+        .map((link: { url: string }) => link.url)
+    },
+    "url": profileUrl,
+    "about": profile.bio
+  }
+
+  // Profile-specific keywords
+  const profileKeywords = [
+    profile.username,
+    profile.display_name || '',
+    'sosyal medya profili',
+    'link sayfası',
+    theme?.name || ''
+  ].filter(Boolean)
+
   return (
     <>
       <SEO
@@ -84,6 +118,8 @@ export default function ProfilePage() {
         url={profileUrl}
         type="profile"
         username={profile.username}
+        keywords={profileKeywords}
+        structuredData={structuredData}
       />
       <div
         className="min-h-screen py-6 sm:py-8 px-4"
