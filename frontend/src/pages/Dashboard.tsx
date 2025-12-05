@@ -27,6 +27,7 @@ export default function Dashboard() {
     username: '',
     theme_id: '',
     background_color: '',
+    text_color: '',
     whatsapp: '',
     phone: '',
     email: ''
@@ -45,6 +46,7 @@ export default function Dashboard() {
         username: profile.username || '',
         theme_id: profile.theme_id || '',
         background_color: profile.background_color || '',
+        text_color: profile.text_color || '',
         whatsapp: profile.whatsapp || '',
         phone: profile.phone || '',
         email: profile.email || '',
@@ -637,6 +639,32 @@ export default function Dashboard() {
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   Leave empty to use theme background. Supports hex colors or CSS gradients.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Text Color (optional)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    className="h-10 w-16 rounded border border-gray-300 cursor-pointer"
+                    value={settingsData.text_color || '#1f2937'}
+                    onChange={(e) => setSettingsData({ ...settingsData, text_color: e.target.value })}
+                    disabled={submitting}
+                  />
+                  <input
+                    type="text"
+                    className="input flex-1"
+                    placeholder="#1f2937"
+                    value={settingsData.text_color}
+                    onChange={(e) => setSettingsData({ ...settingsData, text_color: e.target.value })}
+                    disabled={submitting}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Color for bio and footer text. Leave empty to use theme text color.
                 </p>
               </div>
 

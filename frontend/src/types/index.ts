@@ -10,6 +10,7 @@ export interface Profile {
   whatsapp: string | null
   phone: string | null
   email: string | null
+  text_color: string | null
   is_active: boolean
   created_at: string
   updated_at: string

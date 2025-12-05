@@ -72,7 +72,7 @@ export default function ProfilePage() {
   const siteUrl = window.location.origin
   const profileUrl = `${siteUrl}/${profile.username}`
   const profileTitle = profile.display_name || `@${profile.username}`
-  const profileDescription = profile.bio || `Check out @${profile.username}'s links on Biografy Link`
+  const profileDescription = profile.bio || `Check out @${profile.username}'s links on OrionSoft.dev`
   const profileImage = profile.avatar_url || `${siteUrl}/default-avatar.png`
 
   return (
@@ -110,7 +110,10 @@ export default function ProfilePage() {
           <h1 className="text-xl sm:text-2xl font-bold mb-2">
             {profile.display_name || `@${profile.username}`}
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 px-4">
+          <p
+            className="text-sm sm:text-base px-4"
+            style={{ color: profile.text_color || theme?.config.textColor || '#4b5563' }}
+          >
             {profile.bio || `Welcome to @${profile.username}'s page! 👋`}
           </p>
         </div>
@@ -198,11 +201,20 @@ export default function ProfilePage() {
         )}
 
         {/* Footer */}
-        <div className="text-center mt-8 sm:mt-12 text-xs sm:text-sm text-gray-500">
+        <div
+          className="text-center mt-8 sm:mt-12 text-xs sm:text-sm"
+          style={{ color: profile.text_color || theme?.config.textColor || '#6b7280' }}
+        >
           <p>
             Create your own link page with{' '}
-            <a href="/" className="text-primary-600 hover:underline">
-              Biografy Link
+            <a
+              href="https://orionsoft.dev"
+              className="hover:underline"
+              style={{ color: profile.text_color || theme?.config.textColor || '#6b7280' }}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              OrionSoft.dev
             </a>
           </p>
         </div>
