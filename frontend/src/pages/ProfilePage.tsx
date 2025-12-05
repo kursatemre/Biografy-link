@@ -172,6 +172,48 @@ export default function ProfilePage() {
               const buttonColor = link.color || theme?.config.buttonColor || '#ffffff'
               const buttonTextColor = link.text_color || theme?.config.buttonTextColor || '#1f2937'
 
+              // Shop theme: Show product image on left, name and description on right
+              const isShopTheme = theme?.name === 'Shop'
+
+              if (isShopTheme) {
+                return (
+                  <button
+                    key={link.id}
+                    onClick={() => handleLinkClick(link.id, link.url)}
+                    className={`block w-full py-3 sm:py-4 px-3 sm:px-4 shadow-sm border transition-all hover:scale-102 hover:shadow-md active:scale-100 ${getButtonStyle()}`}
+                    style={{
+                      backgroundColor: buttonColor,
+                      color: buttonTextColor,
+                      borderColor: buttonColor,
+                    }}
+                  >
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      {/* Left: Product Image */}
+                      <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-white/20 flex items-center justify-center overflow-hidden">
+                        {link.icon ? (
+                          <span className="text-3xl sm:text-4xl">{link.icon}</span>
+                        ) : (
+                          <SocialIcon
+                            className="text-3xl sm:text-4xl"
+                            style={{ color: socialColor }}
+                          />
+                        )}
+                      </div>
+                      {/* Right: Product Name and Description */}
+                      <div className="flex-1 text-left">
+                        <div className="font-semibold text-base sm:text-lg mb-0.5">
+                          {link.title}
+                        </div>
+                        <div className="text-xs sm:text-sm opacity-80 line-clamp-1">
+                          Click to view product
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                )
+              }
+
+              // Default theme layout
               return (
                 <button
                   key={link.id}
