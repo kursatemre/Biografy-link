@@ -14,4 +14,22 @@ export default defineConfig({
     port: 5173,
     host: true,
   },
+  build: {
+    // Performance optimizations
+    cssCodeSplit: true,
+    minify: 'esbuild', // Use esbuild for faster minification
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Split vendor chunks for better caching
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'supabase-vendor': ['@supabase/supabase-js'],
+          'icons-vendor': ['lucide-react'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+    // Target modern browsers for smaller bundles
+    target: 'es2015',
+  },
 })
