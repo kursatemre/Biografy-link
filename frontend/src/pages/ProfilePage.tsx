@@ -214,11 +214,11 @@ export default function ProfilePage() {
                         )}
                       </div>
                       {/* Right: Product Name and Description */}
-                      <div className="flex-grow min-w-0">
-                        <h2 className="font-bold text-base sm:text-lg mb-1 leading-snug">
+                      <div className="flex-grow min-w-0 text-left">
+                        <h2 className="font-bold text-base sm:text-lg mb-1 leading-snug text-left">
                           {link.title}
                         </h2>
-                        <p className="text-sm text-current opacity-90 mt-1 line-clamp-2">
+                        <p className="text-sm text-current opacity-90 mt-1 line-clamp-2 text-left">
                           {link.description || 'Click to view product'}
                         </p>
                       </div>
