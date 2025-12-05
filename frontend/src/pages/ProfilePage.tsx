@@ -164,7 +164,13 @@ export default function ProfilePage() {
             <p className="text-sm sm:text-base text-gray-600">No links yet</p>
           </div>
         ) : (
-          <div className="space-y-3 sm:space-y-4 max-w-lg mx-auto">
+          <div className={
+            theme?.name === 'Creative Portfolio'
+              ? "grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto"
+              : theme?.name === 'Gallery Portfolio'
+              ? "space-y-4 sm:space-y-6 max-w-2xl mx-auto"
+              : "space-y-3 sm:space-y-4 max-w-lg mx-auto"
+          }>
             {links.map((link) => {
               const SocialIcon = getSocialIcon(link.url)
               const socialColor = getSocialColor(link.url)
@@ -172,9 +178,14 @@ export default function ProfilePage() {
               const buttonColor = link.color || theme?.config.buttonColor || '#ffffff'
               const buttonTextColor = link.text_color || theme?.config.buttonTextColor || '#1f2937'
 
-              // Shop theme: Show product image on left, name and description on right
+              // Theme checks
               const isShopTheme = theme?.name === 'Shop'
+              const isCreativePortfolio = theme?.name === 'Creative Portfolio'
+              const isMinimalPortfolio = theme?.name === 'Minimal Portfolio'
+              const isGalleryPortfolio = theme?.name === 'Gallery Portfolio'
+              const isBusinessPortfolio = theme?.name === 'Business Portfolio'
 
+              // Shop theme: Show product image on left, name and description on right
               if (isShopTheme) {
                 return (
                   <button
@@ -224,6 +235,161 @@ export default function ProfilePage() {
                         <span className="text-xs font-semibold mt-2 inline-block opacity-100">
                           🛍️ Ürünü İncele ve Satın Al
                         </span>
+                      </div>
+                    </div>
+                  </button>
+                )
+              }
+
+              // Creative Portfolio: Grid card layout with hover effects
+              if (isCreativePortfolio) {
+                return (
+                  <button
+                    key={link.id}
+                    onClick={() => handleLinkClick(link.id, link.url)}
+                    className={`block w-full overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 ${getButtonStyle()}`}
+                    style={{
+                      backgroundColor: buttonColor,
+                      color: buttonTextColor,
+                    }}
+                  >
+                    {/* Image/Icon on top */}
+                    <div className="w-full h-40 sm:h-48 relative overflow-hidden bg-gradient-to-br from-white/20 to-white/5">
+                      {link.image_url ? (
+                        <img
+                          src={link.image_url}
+                          alt={link.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : link.icon ? (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-5xl sm:text-6xl">{link.icon}</span>
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <SocialIcon className="text-5xl sm:text-6xl" style={{ color: socialColor }} />
+                        </div>
+                      )}
+                    </div>
+                    {/* Content below */}
+                    <div className="p-4 sm:p-5">
+                      <h3 className="font-bold text-base sm:text-lg mb-2">{link.title}</h3>
+                      {link.description && (
+                        <p className="text-sm opacity-80 line-clamp-2">{link.description}</p>
+                      )}
+                    </div>
+                  </button>
+                )
+              }
+
+              // Minimal Portfolio: Ultra clean list with thin borders
+              if (isMinimalPortfolio) {
+                return (
+                  <button
+                    key={link.id}
+                    onClick={() => handleLinkClick(link.id, link.url)}
+                    className="block w-full py-4 sm:py-6 px-0 border-b border-gray-200 transition-all hover:pl-4 group text-left"
+                    style={{ color: buttonTextColor }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-grow">
+                        <h3 className="font-semibold text-base sm:text-lg mb-1 group-hover:underline">
+                          {link.title}
+                        </h3>
+                        {link.description && (
+                          <p className="text-sm opacity-60 line-clamp-1">{link.description}</p>
+                        )}
+                      </div>
+                      <div className="text-2xl ml-4 opacity-40 group-hover:opacity-100 transition-opacity">
+                        {link.icon || '→'}
+                      </div>
+                    </div>
+                  </button>
+                )
+              }
+
+              // Gallery Portfolio: Large image cards with overlay
+              if (isGalleryPortfolio) {
+                return (
+                  <button
+                    key={link.id}
+                    onClick={() => handleLinkClick(link.id, link.url)}
+                    className={`block w-full relative overflow-hidden group ${getButtonStyle()}`}
+                    style={{ height: '280px' }}
+                  >
+                    {/* Background Image */}
+                    <div className="absolute inset-0">
+                      {link.image_url ? (
+                        <img
+                          src={link.image_url}
+                          alt={link.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div
+                          className="w-full h-full flex items-center justify-center"
+                          style={{ backgroundColor: buttonColor }}
+                        >
+                          {link.icon ? (
+                            <span className="text-6xl sm:text-7xl" style={{ color: buttonTextColor }}>{link.icon}</span>
+                          ) : (
+                            <SocialIcon className="text-6xl sm:text-7xl" style={{ color: socialColor }} />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {/* Overlay with text */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end p-6">
+                      <div className="text-left text-white">
+                        <h3 className="font-bold text-lg sm:text-xl mb-1">{link.title}</h3>
+                        {link.description && (
+                          <p className="text-sm opacity-90 line-clamp-2">{link.description}</p>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                )
+              }
+
+              // Business Portfolio: Professional case study cards
+              if (isBusinessPortfolio) {
+                return (
+                  <button
+                    key={link.id}
+                    onClick={() => handleLinkClick(link.id, link.url)}
+                    className={`block w-full text-left border-l-4 shadow-md hover:shadow-xl transition-all hover:border-l-8 ${getButtonStyle()}`}
+                    style={{
+                      backgroundColor: buttonColor,
+                      color: buttonTextColor,
+                      borderColor: buttonTextColor,
+                    }}
+                  >
+                    <div className="p-5 sm:p-6">
+                      <div className="flex items-start gap-4">
+                        {/* Icon/Image */}
+                        <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-black/5">
+                          {link.image_url ? (
+                            <img src={link.image_url} alt={link.title} className="w-full h-full object-cover" />
+                          ) : link.icon ? (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <span className="text-3xl">{link.icon}</span>
+                            </div>
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <SocialIcon className="text-3xl" style={{ color: socialColor }} />
+                            </div>
+                          )}
+                        </div>
+                        {/* Content */}
+                        <div className="flex-grow">
+                          <h3 className="font-bold text-lg sm:text-xl mb-2">{link.title}</h3>
+                          {link.description && (
+                            <p className="text-sm opacity-75 mb-3 line-clamp-2">{link.description}</p>
+                          )}
+                          <span className="text-xs font-semibold uppercase tracking-wide opacity-60">
+                            View Case Study →
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </button>
