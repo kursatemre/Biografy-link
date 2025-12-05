@@ -7,6 +7,9 @@ export interface Profile {
   theme_id: string | null
   custom_css: string | null
   background_color: string | null
+  whatsapp: string | null
+  phone: string | null
+  email: string | null
   is_active: boolean
   created_at: string
   updated_at: string
@@ -19,6 +22,7 @@ export interface Link {
   url: string
   icon: string | null
   color: string | null
+  text_color: string | null
   position: number
   is_active: boolean
   created_at: string

@@ -5,6 +5,7 @@ import { useLinks } from '@/hooks/useLinks'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useTheme } from '@/hooks/useThemes'
 import { Link2 } from 'lucide-react'
+import { FaWhatsapp, FaPhone, FaEnvelope } from 'react-icons/fa'
 import SEO from '@/components/SEO'
 import { getSocialIcon, getSocialColor } from '@/utils/socialMedia'
 
@@ -114,6 +115,41 @@ export default function ProfilePage() {
           </p>
         </div>
 
+        {/* Contact Buttons */}
+        {(profile.whatsapp || profile.phone || profile.email) && (
+          <div className="flex justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+            {profile.whatsapp && (
+              <a
+                href={`https://wa.me/${profile.whatsapp.replace(/[^0-9]/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-[#25D366] text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+                aria-label="WhatsApp"
+              >
+                <FaWhatsapp className="w-7 h-7 sm:w-8 sm:h-8" />
+              </a>
+            )}
+            {profile.phone && (
+              <a
+                href={`tel:${profile.phone}`}
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+                aria-label="Phone"
+              >
+                <FaPhone className="w-6 h-6 sm:w-7 sm:h-7" />
+              </a>
+            )}
+            {profile.email && (
+              <a
+                href={`mailto:${profile.email}`}
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gray-700 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+                aria-label="Email"
+              >
+                <FaEnvelope className="w-6 h-6 sm:w-7 sm:h-7" />
+              </a>
+            )}
+          </div>
+        )}
+
         {/* Links */}
         {linksLoading ? (
           <div className="text-center py-8">
@@ -131,7 +167,7 @@ export default function ProfilePage() {
               const socialColor = getSocialColor(link.url)
 
               const buttonColor = link.color || theme?.config.buttonColor || '#ffffff'
-              const buttonTextColor = theme?.config.buttonTextColor || '#1f2937'
+              const buttonTextColor = link.text_color || theme?.config.buttonTextColor || '#1f2937'
 
               return (
                 <button

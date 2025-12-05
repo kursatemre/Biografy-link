@@ -19,14 +19,17 @@ export default function Dashboard() {
   const [editingLink, setEditingLink] = useState<any>(null)
   const [showSettings, setShowSettings] = useState(false)
   const [showAnalytics, setShowAnalytics] = useState(false)
-  const [formData, setFormData] = useState({ title: '', url: '', icon: '', color: '' })
+  const [formData, setFormData] = useState({ title: '', url: '', icon: '', color: '', text_color: '' })
   const [settingsData, setSettingsData] = useState({
     display_name: '',
     bio: '',
     avatar_url: '',
     username: '',
     theme_id: '',
-    background_color: ''
+    background_color: '',
+    whatsapp: '',
+    phone: '',
+    email: ''
   })
   const [submitting, setSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
@@ -42,6 +45,9 @@ export default function Dashboard() {
         username: profile.username || '',
         theme_id: profile.theme_id || '',
         background_color: profile.background_color || '',
+        whatsapp: profile.whatsapp || '',
+        phone: profile.phone || '',
+        email: profile.email || '',
       })
     }
   }, [profile])
@@ -133,19 +139,20 @@ export default function Dashboard() {
     setSubmitting(true)
     setSuccessMessage('')
 
-    const { error, data } = await addLink({
+    const { error, data} = await addLink({
       profile_id: profile.id,
       title: formData.title,
       url: formData.url,
       icon: formData.icon || null,
       color: formData.color || null,
+      text_color: formData.text_color || null,
       is_active: true,
       position: links.length,
     })
 
     if (!error && data) {
       setShowAddModal(false)
-      setFormData({ title: '', url: '', icon: '', color: '' })
+      setFormData({ title: '', url: '', icon: '', color: '', text_color: '' })
       setSuccessMessage(`Link "${formData.title}" added successfully! ✓`)
       setTimeout(() => setSuccessMessage(''), 3000)
     } else if (error) {
@@ -166,11 +173,12 @@ export default function Dashboard() {
       url: formData.url,
       icon: formData.icon || null,
       color: formData.color || null,
+      text_color: formData.text_color || null,
     })
 
     if (!error) {
       setEditingLink(null)
-      setFormData({ title: '', url: '', icon: '', color: '' })
+      setFormData({ title: '', url: '', icon: '', color: '', text_color: '' })
       setSuccessMessage('Link updated successfully! ✓')
       setTimeout(() => setSuccessMessage(''), 3000)
     } else {
@@ -239,6 +247,7 @@ export default function Dashboard() {
       url: link.url,
       icon: link.icon || '',
       color: link.color || '',
+      text_color: link.text_color || '',
     })
   }
 
@@ -631,6 +640,64 @@ export default function Dashboard() {
                 </p>
               </div>
 
+              {/* Contact Information */}
+              <div className="border-t pt-4">
+                <h4 className="text-sm font-semibold text-gray-900 mb-3">Contact Buttons</h4>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      WhatsApp
+                    </label>
+                    <input
+                      type="text"
+                      className="input"
+                      placeholder="+90 5XX XXX XX XX"
+                      value={settingsData.whatsapp}
+                      onChange={(e) => setSettingsData({ ...settingsData, whatsapp: e.target.value })}
+                      disabled={submitting}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Phone number with country code
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      className="input"
+                      placeholder="+90 5XX XXX XX XX"
+                      value={settingsData.phone}
+                      onChange={(e) => setSettingsData({ ...settingsData, phone: e.target.value })}
+                      disabled={submitting}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Phone number for direct calls
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      className="input"
+                      placeholder="your@email.com"
+                      value={settingsData.email}
+                      onChange={(e) => setSettingsData({ ...settingsData, email: e.target.value })}
+                      disabled={submitting}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Email address for contact
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Theme
@@ -755,7 +822,7 @@ export default function Dashboard() {
                 onClick={() => {
                   setShowAddModal(false)
                   setEditingLink(null)
-                  setFormData({ title: '', url: '', icon: '', color: '' })
+                  setFormData({ title: '', url: '', icon: '', color: '', text_color: '' })
                 }}
                 className="p-1 hover:bg-gray-100 rounded"
               >
@@ -838,13 +905,39 @@ export default function Dashboard() {
                 </p>
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Text Color (optional)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    className="h-10 w-16 rounded border border-gray-300 cursor-pointer"
+                    value={formData.text_color || '#ffffff'}
+                    onChange={(e) => setFormData({ ...formData, text_color: e.target.value })}
+                    disabled={submitting}
+                  />
+                  <input
+                    type="text"
+                    className="input flex-1"
+                    placeholder="#ffffff"
+                    value={formData.text_color}
+                    onChange={(e) => setFormData({ ...formData, text_color: e.target.value })}
+                    disabled={submitting}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Button text color. Leave empty to use theme text color
+                </p>
+              </div>
+
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={() => {
                     setShowAddModal(false)
                     setEditingLink(null)
-                    setFormData({ title: '', url: '', icon: '', color: '' })
+                    setFormData({ title: '', url: '', icon: '', color: '', text_color: ''})
                   }}
                   className="flex-1 btn btn-secondary"
                   disabled={submitting}
