@@ -189,7 +189,7 @@ export default function ProfilePage() {
                   >
                     <div className="flex items-start gap-3 sm:gap-4">
                       {/* Left: Product Image */}
-                      <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-white/10">
+                      <div className="flex-shrink-0 w-24 h-24 rounded-md overflow-hidden bg-white/10">
                         {link.image_url ? (
                           <img
                             src={link.image_url}

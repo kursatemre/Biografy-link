@@ -8,7 +8,7 @@ VALUES (
     "textColor": "#ffffff",
     "buttonColor": "#ffffff",
     "buttonTextColor": "#667eea",
-    "buttonStyle": "pill",
+    "buttonStyle": "square",
     "fontFamily": "Inter, sans-serif"
   }'::jsonb,
   false
