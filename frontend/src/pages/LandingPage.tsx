@@ -1,10 +1,56 @@
 import { Link } from 'react-router-dom'
 import { useState, FormEvent } from 'react'
-import { Link2, Palette, BarChart3, Eye, MousePointerClick, Zap, CheckCircle2, X } from 'lucide-react'
+import { Link2, Palette, BarChart3, Eye, MousePointerClick, Zap, CheckCircle2, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useNewsletter } from '@/hooks/useNewsletter'
+
+const themes = [
+  {
+    name: 'Shop',
+    emoji: '🛍️',
+    description: 'E-ticaret ve ürün vitrinleri için mükemmel',
+    gradient: 'from-purple-400 to-indigo-600',
+    features: ['Ürün görselleri', 'Açıklama metni', 'CTA butonları']
+  },
+  {
+    name: 'Social Media',
+    emoji: '💜',
+    description: 'İnfluencer ve içerik üreticileri için',
+    gradient: 'from-pink-400 to-purple-600',
+    features: ['Otomatik sosyal medya ikonları', 'Gradient arka plan', 'Pill butonlar']
+  },
+  {
+    name: 'Creative Portfolio',
+    emoji: '🎨',
+    description: 'Tasarımcılar ve yaratıcılar için',
+    gradient: 'from-rose-400 to-pink-600',
+    features: ['2 kolonlu grid', 'Hover efektleri', 'Görsel odaklı']
+  },
+  {
+    name: 'Minimal Portfolio',
+    emoji: '✨',
+    description: 'Profesyoneller ve freelancerlar için',
+    gradient: 'from-gray-400 to-gray-600',
+    features: ['Ultra minimal', 'Liste düzeni', 'Elegant tipografi']
+  },
+  {
+    name: 'Gallery Portfolio',
+    emoji: '📸',
+    description: 'Fotoğrafçılar ve görsel sanatçılar için',
+    gradient: 'from-slate-700 to-slate-900',
+    features: ['Tam genişlik görseller', 'Zoom efekti', 'Dark tema']
+  },
+  {
+    name: 'Business Portfolio',
+    emoji: '💼',
+    description: 'Ajanslar ve danışmanlar için',
+    gradient: 'from-blue-600 to-indigo-700',
+    features: ['Case study kartları', 'Profesyonel düzen', 'Border vurgusu']
+  }
+]
 
 export default function LandingPage() {
   const [showSignupModal, setShowSignupModal] = useState(false)
+  const [currentTheme, setCurrentTheme] = useState(0)
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
@@ -13,6 +59,14 @@ export default function LandingPage() {
   })
   const [success, setSuccess] = useState(false)
   const { signup, loading, error } = useNewsletter()
+
+  const nextTheme = () => {
+    setCurrentTheme((prev) => (prev + 1) % themes.length)
+  }
+
+  const prevTheme = () => {
+    setCurrentTheme((prev) => (prev - 1 + themes.length) % themes.length)
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -192,6 +246,72 @@ export default function LandingPage() {
               description="Dakikalar içinde kurun. Kod bilgisi gerektirmez. Hemen kullanmaya başlayın."
               color="bg-yellow-100 text-yellow-600"
             />
+          </div>
+        </div>
+
+        {/* Theme Carousel */}
+        <div className="mt-20 sm:mt-24 md:mt-32">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              6 Benzersiz Tema
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Her kullanıcı türü için özel tasarlanmış temalar. İşletmenize en uygun olanı seçin.
+            </p>
+          </div>
+
+          <div className="relative max-w-4xl mx-auto">
+            {/* Carousel */}
+            <div className="relative overflow-hidden rounded-2xl">
+              {/* Theme Card */}
+              <div className={`bg-gradient-to-br ${themes[currentTheme].gradient} p-8 sm:p-12 text-white min-h-[400px] flex flex-col justify-between`}>
+                <div>
+                  <div className="text-6xl mb-4">{themes[currentTheme].emoji}</div>
+                  <h3 className="text-3xl sm:text-4xl font-bold mb-3">{themes[currentTheme].name}</h3>
+                  <p className="text-lg sm:text-xl opacity-90 mb-6">{themes[currentTheme].description}</p>
+
+                  <div className="space-y-2">
+                    {themes[currentTheme].features.map((feature, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <CheckCircle2 className="w-5 h-5" />
+                        <span className="text-base">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <div className="flex gap-2 justify-center">
+                    {themes.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentTheme(index)}
+                        className={`h-2 rounded-full transition-all ${
+                          index === currentTheme ? 'w-8 bg-white' : 'w-2 bg-white/50'
+                        }`}
+                        aria-label={`Go to theme ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Navigation Buttons */}
+              <button
+                onClick={prevTheme}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full flex items-center justify-center transition-all"
+                aria-label="Previous theme"
+              >
+                <ChevronLeft className="w-6 h-6 text-white" />
+              </button>
+              <button
+                onClick={nextTheme}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full flex items-center justify-center transition-all"
+                aria-label="Next theme"
+              >
+                <ChevronRight className="w-6 h-6 text-white" />
+              </button>
+            </div>
           </div>
         </div>
 
