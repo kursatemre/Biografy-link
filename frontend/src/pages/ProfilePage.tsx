@@ -87,7 +87,7 @@ export default function ProfilePage() {
       <div
         className="min-h-screen py-6 sm:py-8 px-4"
         style={{
-          background: theme?.config.backgroundColor || '#ffffff',
+          background: profile.background_color || theme?.config.backgroundColor || '#ffffff',
           color: theme?.config.textColor || '#1f2937',
           fontFamily: theme?.config.fontFamily || 'Inter, sans-serif',
         }}
@@ -130,15 +130,18 @@ export default function ProfilePage() {
               const SocialIcon = getSocialIcon(link.url)
               const socialColor = getSocialColor(link.url)
 
+              const buttonColor = link.color || theme?.config.buttonColor || '#ffffff'
+              const buttonTextColor = theme?.config.buttonTextColor || '#1f2937'
+
               return (
                 <button
                   key={link.id}
                   onClick={() => handleLinkClick(link.id, link.url)}
                   className={`block w-full py-3 sm:py-4 px-4 sm:px-6 shadow-sm border transition-all hover:scale-105 hover:shadow-md active:scale-100 ${getButtonStyle()}`}
                   style={{
-                    backgroundColor: theme?.config.buttonColor || '#ffffff',
-                    color: theme?.config.buttonTextColor || '#1f2937',
-                    borderColor: theme?.config.buttonColor || '#e5e7eb',
+                    backgroundColor: buttonColor,
+                    color: buttonTextColor,
+                    borderColor: buttonColor,
                   }}
                 >
                   <div className="flex items-center justify-center gap-2 sm:gap-3">

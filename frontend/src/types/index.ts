@@ -6,6 +6,7 @@ export interface Profile {
   avatar_url: string | null
   theme_id: string | null
   custom_css: string | null
+  background_color: string | null
   is_active: boolean
   created_at: string
   updated_at: string
@@ -17,6 +18,7 @@ export interface Link {
   title: string
   url: string
   icon: string | null
+  color: string | null
   position: number
   is_active: boolean
   created_at: string

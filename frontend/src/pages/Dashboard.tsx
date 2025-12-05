@@ -19,13 +19,14 @@ export default function Dashboard() {
   const [editingLink, setEditingLink] = useState<any>(null)
   const [showSettings, setShowSettings] = useState(false)
   const [showAnalytics, setShowAnalytics] = useState(false)
-  const [formData, setFormData] = useState({ title: '', url: '', icon: '' })
+  const [formData, setFormData] = useState({ title: '', url: '', icon: '', color: '' })
   const [settingsData, setSettingsData] = useState({
     display_name: '',
     bio: '',
     avatar_url: '',
     username: '',
-    theme_id: ''
+    theme_id: '',
+    background_color: ''
   })
   const [submitting, setSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
@@ -40,6 +41,7 @@ export default function Dashboard() {
         avatar_url: profile.avatar_url || '',
         username: profile.username || '',
         theme_id: profile.theme_id || '',
+        background_color: profile.background_color || '',
       })
     }
   }, [profile])
@@ -136,13 +138,14 @@ export default function Dashboard() {
       title: formData.title,
       url: formData.url,
       icon: formData.icon || null,
+      color: formData.color || null,
       is_active: true,
       position: links.length,
     })
 
     if (!error && data) {
       setShowAddModal(false)
-      setFormData({ title: '', url: '', icon: '' })
+      setFormData({ title: '', url: '', icon: '', color: '' })
       setSuccessMessage(`Link "${formData.title}" added successfully! ✓`)
       setTimeout(() => setSuccessMessage(''), 3000)
     } else if (error) {
@@ -162,11 +165,12 @@ export default function Dashboard() {
       title: formData.title,
       url: formData.url,
       icon: formData.icon || null,
+      color: formData.color || null,
     })
 
     if (!error) {
       setEditingLink(null)
-      setFormData({ title: '', url: '', icon: '' })
+      setFormData({ title: '', url: '', icon: '', color: '' })
       setSuccessMessage('Link updated successfully! ✓')
       setTimeout(() => setSuccessMessage(''), 3000)
     } else {
@@ -234,6 +238,7 @@ export default function Dashboard() {
       title: link.title,
       url: link.url,
       icon: link.icon || '',
+      color: link.color || '',
     })
   }
 
@@ -602,6 +607,32 @@ export default function Dashboard() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Background Color (optional)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    className="h-10 w-16 rounded border border-gray-300 cursor-pointer"
+                    value={settingsData.background_color || '#ffffff'}
+                    onChange={(e) => setSettingsData({ ...settingsData, background_color: e.target.value })}
+                    disabled={submitting}
+                  />
+                  <input
+                    type="text"
+                    className="input flex-1"
+                    placeholder="#ffffff or gradient"
+                    value={settingsData.background_color}
+                    onChange={(e) => setSettingsData({ ...settingsData, background_color: e.target.value })}
+                    disabled={submitting}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Leave empty to use theme background. Supports hex colors or CSS gradients.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Theme
                 </label>
                 {themesLoading ? (
@@ -724,7 +755,7 @@ export default function Dashboard() {
                 onClick={() => {
                   setShowAddModal(false)
                   setEditingLink(null)
-                  setFormData({ title: '', url: '', icon: '' })
+                  setFormData({ title: '', url: '', icon: '', color: '' })
                 }}
                 className="p-1 hover:bg-gray-100 rounded"
               >
@@ -776,6 +807,35 @@ export default function Dashboard() {
                   onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
                   disabled={submitting}
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Leave empty for auto social media icon
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Button Color (optional)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    className="h-10 w-16 rounded border border-gray-300 cursor-pointer"
+                    value={formData.color || '#3b82f6'}
+                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                    disabled={submitting}
+                  />
+                  <input
+                    type="text"
+                    className="input flex-1"
+                    placeholder="#3b82f6"
+                    value={formData.color}
+                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                    disabled={submitting}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Leave empty to use theme color
+                </p>
               </div>
 
               <div className="flex gap-3">
@@ -784,7 +844,7 @@ export default function Dashboard() {
                   onClick={() => {
                     setShowAddModal(false)
                     setEditingLink(null)
-                    setFormData({ title: '', url: '', icon: '' })
+                    setFormData({ title: '', url: '', icon: '', color: '' })
                   }}
                   className="flex-1 btn btn-secondary"
                   disabled={submitting}
