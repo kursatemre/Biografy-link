@@ -3,6 +3,81 @@ import { useState, FormEvent } from 'react'
 import { Link2, Palette, BarChart3, Eye, MousePointerClick, Zap, CheckCircle2, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useNewsletter } from '@/hooks/useNewsletter'
 
+const demoThemes = [
+  {
+    name: '@shop_demo',
+    title: 'E-Ticaret Mağazası',
+    subtitle: 'Ürün vitrinleri için 🛍️',
+    gradient: 'from-purple-400 to-indigo-600',
+    avatar: 'S',
+    links: [
+      { icon: '👕', title: 'Yeni Koleksiyon', color: 'from-purple-500 to-pink-600' },
+      { icon: '👟', title: 'Spor Ayakkabılar', color: 'from-blue-500 to-cyan-600' },
+      { icon: '🎒', title: 'Aksesuar', color: 'from-green-500 to-emerald-600' }
+    ]
+  },
+  {
+    name: '@influencer_demo',
+    title: 'Sosyal Medya',
+    subtitle: 'İnfluencer & Creator 💜',
+    gradient: 'from-pink-400 to-purple-600',
+    avatar: 'I',
+    links: [
+      { icon: '📸', title: 'Instagram', color: 'from-pink-400 to-purple-600' },
+      { icon: '🎥', title: 'YouTube', color: 'from-red-400 to-red-600' },
+      { icon: '🎵', title: 'TikTok', color: 'from-gray-800 to-gray-900' }
+    ]
+  },
+  {
+    name: '@designer_demo',
+    title: 'Creative Portfolio',
+    subtitle: 'Designer & Artist 🎨',
+    gradient: 'from-rose-400 to-pink-600',
+    avatar: 'D',
+    links: [
+      { icon: '🎨', title: 'Portfolio', color: 'from-rose-400 to-pink-600' },
+      { icon: '✏️', title: 'Dribbble', color: 'from-pink-500 to-rose-600' },
+      { icon: '🖼️', title: 'Behance', color: 'from-blue-500 to-purple-600' }
+    ]
+  },
+  {
+    name: '@pro_demo',
+    title: 'Minimal Professional',
+    subtitle: 'Clean & Simple ✨',
+    gradient: 'from-gray-400 to-gray-600',
+    avatar: 'P',
+    links: [
+      { icon: '💼', title: 'LinkedIn', color: 'from-blue-600 to-blue-700' },
+      { icon: '📧', title: 'Email Me', color: 'from-gray-500 to-gray-700' },
+      { icon: '📄', title: 'Resume', color: 'from-green-500 to-green-700' }
+    ]
+  },
+  {
+    name: '@photographer_demo',
+    title: 'Gallery Portfolio',
+    subtitle: 'Photographer 📸',
+    gradient: 'from-slate-700 to-slate-900',
+    avatar: 'G',
+    links: [
+      { icon: '📷', title: 'Wedding Photos', color: 'from-slate-600 to-slate-800' },
+      { icon: '🌅', title: 'Landscapes', color: 'from-orange-500 to-red-600' },
+      { icon: '👤', title: 'Portraits', color: 'from-purple-500 to-pink-600' }
+    ]
+  },
+  {
+    name: '@agency_demo',
+    title: 'Business Portfolio',
+    subtitle: 'Agency & Consultant 💼',
+    gradient: 'from-blue-600 to-indigo-700',
+    avatar: 'A',
+    links: [
+      { icon: '🚀', title: 'Case Studies', color: 'from-blue-600 to-indigo-700' },
+      { icon: '💡', title: 'Our Services', color: 'from-purple-600 to-blue-700' },
+      { icon: '📞', title: 'Contact Us', color: 'from-green-600 to-teal-700' }
+    ]
+  }
+]
+
 const themes = [
   {
     name: 'Shop',
@@ -51,6 +126,7 @@ const themes = [
 export default function LandingPage() {
   const [showSignupModal, setShowSignupModal] = useState(false)
   const [currentTheme, setCurrentTheme] = useState(0)
+  const [currentDemoTheme, setCurrentDemoTheme] = useState(0)
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
@@ -66,6 +142,14 @@ export default function LandingPage() {
 
   const prevTheme = () => {
     setCurrentTheme((prev) => (prev - 1 + themes.length) % themes.length)
+  }
+
+  const nextDemoTheme = () => {
+    setCurrentDemoTheme((prev) => (prev + 1) % demoThemes.length)
+  }
+
+  const prevDemoTheme = () => {
+    setCurrentDemoTheme((prev) => (prev - 1 + demoThemes.length) % demoThemes.length)
   }
 
   const handleSubmit = async (e: FormEvent) => {
@@ -88,8 +172,13 @@ export default function LandingPage() {
       <header className="container mx-auto px-4 py-4 sm:py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Link2 className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600" />
-            <span className="text-xl sm:text-2xl font-bold text-gray-900">Biografy Link</span>
+            <div className="relative">
+              <Link2 className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600" />
+              <div className="absolute -bottom-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-purple-500 rounded-full"></div>
+            </div>
+            <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">
+              TheLinker
+            </span>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             <Link to="/auth" className="text-sm sm:text-base text-gray-600 hover:text-gray-900">
@@ -155,7 +244,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right: Demo Profile */}
+            {/* Right: Demo Profile Carousel */}
             <div className="max-w-md mx-auto w-full">
               <div className="relative">
                 {/* Floating badge */}
@@ -163,23 +252,19 @@ export default function LandingPage() {
                   Canlı Demo ✨
                 </div>
 
-                {/* Demo Card */}
-                <div className="card bg-white p-8 shadow-2xl transform hover:scale-105 transition-transform">
+                {/* Demo Card Carousel */}
+                <div className="card bg-white p-8 shadow-2xl transition-all relative overflow-hidden">
                   <div className="text-center">
-                    <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-                      O
+                    <div className={`w-24 h-24 mx-auto mb-4 bg-gradient-to-br ${demoThemes[currentDemoTheme].gradient} rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg`}>
+                      {demoThemes[currentDemoTheme].avatar}
                     </div>
-                    <h3 className="text-2xl font-bold mb-2">@orionsoft5</h3>
-                    <p className="text-gray-600 mb-6">Software Developer & Content Creator 🚀</p>
+                    <h3 className="text-2xl font-bold mb-1">{demoThemes[currentDemoTheme].name}</h3>
+                    <p className="text-lg font-medium text-primary-600 mb-2">{demoThemes[currentDemoTheme].title}</p>
+                    <p className="text-sm text-gray-600 mb-6">{demoThemes[currentDemoTheme].subtitle}</p>
                   </div>
 
                   <div className="space-y-3">
-                    {[
-                      { icon: '🌐', title: 'My Website', color: 'from-blue-400 to-blue-600' },
-                      { icon: '📸', title: 'Instagram', color: 'from-pink-400 to-purple-600' },
-                      { icon: '🎥', title: 'YouTube', color: 'from-red-400 to-red-600' },
-                      { icon: '🛍️', title: 'Shop', color: 'from-green-400 to-green-600' },
-                    ].map((item, index) => (
+                    {demoThemes[currentDemoTheme].links.map((item, index) => (
                       <div
                         key={index}
                         className={`w-full py-4 px-6 bg-gradient-to-r ${item.color} text-white rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer transform hover:scale-105`}
@@ -190,6 +275,39 @@ export default function LandingPage() {
                         </div>
                       </div>
                     ))}
+                  </div>
+
+                  {/* Navigation arrows */}
+                  <div className="flex items-center justify-between mt-6">
+                    <button
+                      onClick={prevDemoTheme}
+                      className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all"
+                      aria-label="Previous demo"
+                    >
+                      <ChevronLeft className="w-5 h-5 text-gray-700" />
+                    </button>
+
+                    {/* Dot indicators */}
+                    <div className="flex gap-2">
+                      {demoThemes.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentDemoTheme(index)}
+                          className={`h-2 rounded-full transition-all ${
+                            index === currentDemoTheme ? 'w-8 bg-primary-600' : 'w-2 bg-gray-300'
+                          }`}
+                          aria-label={`Go to demo ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={nextDemoTheme}
+                      className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all"
+                      aria-label="Next demo"
+                    >
+                      <ChevronRight className="w-5 h-5 text-gray-700" />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -367,13 +485,24 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="container mx-auto px-4 py-8 mt-20 border-t">
         <div className="text-center text-gray-600">
-          <p className="mb-2">&copy; 2024 Biografy Link. Tüm hakları saklıdır.</p>
-          <p className="text-sm">
+          <p className="mb-2">&copy; 2024 TheLinker. Tüm hakları saklıdır.</p>
+          <p className="text-sm mb-4">
             <Link to="/auth" className="hover:text-primary-600">Giriş Yap</Link>
             {' • '}
             <button onClick={() => setShowSignupModal(true)} className="hover:text-primary-600">
               Kayıt Ol
             </button>
+          </p>
+          <p className="text-xs text-gray-500">
+            Built with ❤️ by{' '}
+            <a
+              href="https://orionsoft.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-600 hover:text-primary-700 font-medium"
+            >
+              OrionSoft.dev
+            </a>
           </p>
         </div>
       </footer>
