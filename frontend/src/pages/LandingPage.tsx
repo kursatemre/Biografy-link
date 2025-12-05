@@ -6,18 +6,19 @@ import { useNewsletter } from '@/hooks/useNewsletter'
 const demoThemes = [
   {
     name: '@shop_demo',
+    type: 'Shop',
     title: 'E-Ticaret Mağazası',
     subtitle: 'Ürün vitrinleri için 🛍️',
     gradient: 'from-purple-400 to-indigo-600',
     avatar: 'S',
     links: [
-      { icon: '👕', title: 'Yeni Koleksiyon', color: 'from-purple-500 to-pink-600' },
-      { icon: '👟', title: 'Spor Ayakkabılar', color: 'from-blue-500 to-cyan-600' },
-      { icon: '🎒', title: 'Aksesuar', color: 'from-green-500 to-emerald-600' }
+      { icon: '👕', title: 'Kışlık Koleksiyon', desc: 'Sıcak tutan, yumuşak dokulu sezonun favorisi', color: 'from-purple-500 to-pink-600' },
+      { icon: '👟', title: 'Spor Ayakkabı', desc: 'Konforlu ve şık tasarım, her adımda rahatlık', color: 'from-blue-500 to-cyan-600' }
     ]
   },
   {
     name: '@influencer_demo',
+    type: 'Social Media',
     title: 'Sosyal Medya',
     subtitle: 'İnfluencer & Creator 💜',
     gradient: 'from-pink-400 to-purple-600',
@@ -30,50 +31,51 @@ const demoThemes = [
   },
   {
     name: '@designer_demo',
+    type: 'Creative Portfolio',
     title: 'Creative Portfolio',
     subtitle: 'Designer & Artist 🎨',
     gradient: 'from-rose-400 to-pink-600',
     avatar: 'D',
     links: [
-      { icon: '🎨', title: 'Portfolio', color: 'from-rose-400 to-pink-600' },
-      { icon: '✏️', title: 'Dribbble', color: 'from-pink-500 to-rose-600' },
-      { icon: '🖼️', title: 'Behance', color: 'from-blue-500 to-purple-600' }
+      { icon: '🎨', title: 'My Work', color: 'from-rose-400 to-pink-600' },
+      { icon: '✏️', title: 'Dribbble', color: 'from-pink-500 to-rose-600' }
     ]
   },
   {
     name: '@pro_demo',
+    type: 'Minimal Portfolio',
     title: 'Minimal Professional',
     subtitle: 'Clean & Simple ✨',
     gradient: 'from-gray-400 to-gray-600',
     avatar: 'P',
     links: [
-      { icon: '💼', title: 'LinkedIn', color: 'from-blue-600 to-blue-700' },
+      { icon: '💼', title: 'LinkedIn Profile', color: 'from-blue-600 to-blue-700' },
       { icon: '📧', title: 'Email Me', color: 'from-gray-500 to-gray-700' },
-      { icon: '📄', title: 'Resume', color: 'from-green-500 to-green-700' }
+      { icon: '📄', title: 'My Resume', color: 'from-green-500 to-green-700' }
     ]
   },
   {
     name: '@photographer_demo',
+    type: 'Gallery Portfolio',
     title: 'Gallery Portfolio',
     subtitle: 'Photographer 📸',
     gradient: 'from-slate-700 to-slate-900',
     avatar: 'G',
     links: [
       { icon: '📷', title: 'Wedding Photos', color: 'from-slate-600 to-slate-800' },
-      { icon: '🌅', title: 'Landscapes', color: 'from-orange-500 to-red-600' },
-      { icon: '👤', title: 'Portraits', color: 'from-purple-500 to-pink-600' }
+      { icon: '🌅', title: 'Landscapes', color: 'from-orange-500 to-red-600' }
     ]
   },
   {
     name: '@agency_demo',
+    type: 'Business Portfolio',
     title: 'Business Portfolio',
     subtitle: 'Agency & Consultant 💼',
     gradient: 'from-blue-600 to-indigo-700',
     avatar: 'A',
     links: [
-      { icon: '🚀', title: 'Case Studies', color: 'from-blue-600 to-indigo-700' },
-      { icon: '💡', title: 'Our Services', color: 'from-purple-600 to-blue-700' },
-      { icon: '📞', title: 'Contact Us', color: 'from-green-600 to-teal-700' }
+      { icon: '🚀', title: 'Case Studies', desc: 'Successful projects we delivered', color: 'from-blue-600 to-indigo-700' },
+      { icon: '💡', title: 'Our Services', desc: 'Web design, branding & more', color: 'from-purple-600 to-blue-700' }
     ]
   }
 ]
@@ -263,19 +265,118 @@ export default function LandingPage() {
                     <p className="text-sm text-gray-600 mb-6">{demoThemes[currentDemoTheme].subtitle}</p>
                   </div>
 
-                  <div className="space-y-3">
-                    {demoThemes[currentDemoTheme].links.map((item, index) => (
-                      <div
-                        key={index}
-                        className={`w-full py-4 px-6 bg-gradient-to-r ${item.color} text-white rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer transform hover:scale-105`}
-                      >
-                        <div className="flex items-center justify-center gap-3 font-medium">
-                          <span className="text-2xl">{item.icon}</span>
-                          <span>{item.title}</span>
+                  {/* Theme-specific layouts */}
+                  {demoThemes[currentDemoTheme].type === 'Shop' && (
+                    <div className="space-y-3">
+                      {demoThemes[currentDemoTheme].links.map((item, index) => (
+                        <div
+                          key={index}
+                          className={`w-full p-3 bg-gradient-to-r ${item.color} text-white rounded-lg shadow-lg border-2 border-white/30`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="w-16 h-16 bg-white/20 rounded-md flex items-center justify-center flex-shrink-0">
+                              <span className="text-3xl">{item.icon}</span>
+                            </div>
+                            <div className="flex-1 text-left">
+                              <h4 className="font-bold text-base mb-1">{item.title}</h4>
+                              {'desc' in item && <p className="text-xs opacity-90">{item.desc}</p>}
+                              <span className="text-xs font-semibold mt-1 inline-block">🛍️ Ürünü İncele</span>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {demoThemes[currentDemoTheme].type === 'Social Media' && (
+                    <div className="space-y-3">
+                      {demoThemes[currentDemoTheme].links.map((item, index) => (
+                        <div
+                          key={index}
+                          className={`w-full py-4 px-6 bg-gradient-to-r ${item.color} text-white rounded-full shadow-md`}
+                        >
+                          <div className="flex items-center justify-center gap-3 font-medium">
+                            <span className="text-2xl">{item.icon}</span>
+                            <span>{item.title}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {demoThemes[currentDemoTheme].type === 'Creative Portfolio' && (
+                    <div className="grid grid-cols-2 gap-3">
+                      {demoThemes[currentDemoTheme].links.map((item, index) => (
+                        <div
+                          key={index}
+                          className={`bg-gradient-to-br ${item.color} text-white rounded-xl shadow-md overflow-hidden`}
+                        >
+                          <div className="h-24 flex items-center justify-center bg-white/10">
+                            <span className="text-4xl">{item.icon}</span>
+                          </div>
+                          <div className="p-3 text-center">
+                            <h4 className="font-bold text-sm">{item.title}</h4>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {demoThemes[currentDemoTheme].type === 'Minimal Portfolio' && (
+                    <div className="space-y-0">
+                      {demoThemes[currentDemoTheme].links.map((item, index) => (
+                        <div
+                          key={index}
+                          className="py-4 border-b border-gray-200 last:border-0"
+                        >
+                          <div className="flex items-center justify-between text-gray-800">
+                            <h4 className="font-semibold">{item.title}</h4>
+                            <span className="text-xl opacity-40">{item.icon}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {demoThemes[currentDemoTheme].type === 'Gallery Portfolio' && (
+                    <div className="space-y-3">
+                      {demoThemes[currentDemoTheme].links.map((item, index) => (
+                        <div
+                          key={index}
+                          className="relative h-32 rounded-lg overflow-hidden"
+                        >
+                          <div className={`absolute inset-0 bg-gradient-to-br ${item.color} flex items-center justify-center`}>
+                            <span className="text-5xl">{item.icon}</span>
+                          </div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
+                            <h4 className="text-white font-bold">{item.title}</h4>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {demoThemes[currentDemoTheme].type === 'Business Portfolio' && (
+                    <div className="space-y-3">
+                      {demoThemes[currentDemoTheme].links.map((item, index) => (
+                        <div
+                          key={index}
+                          className={`bg-gradient-to-r ${item.color} text-white rounded-lg shadow-md border-l-4 border-white p-4`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="w-12 h-12 bg-white/20 rounded-md flex items-center justify-center flex-shrink-0">
+                              <span className="text-2xl">{item.icon}</span>
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-bold mb-1">{item.title}</h4>
+                              {'desc' in item && <p className="text-xs opacity-80">{item.desc}</p>}
+                              <span className="text-xs font-semibold uppercase mt-2 inline-block opacity-60">View →</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   {/* Navigation arrows */}
                   <div className="flex items-center justify-between mt-6">
