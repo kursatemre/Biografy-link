@@ -180,11 +180,11 @@ export default function ProfilePage() {
                   <button
                     key={link.id}
                     onClick={() => handleLinkClick(link.id, link.url)}
-                    className={`block w-full py-3 sm:py-4 px-3 sm:px-4 shadow-sm border transition-all hover:scale-102 hover:shadow-md active:scale-100 ${getButtonStyle()}`}
+                    className={`block w-full py-3 sm:py-4 px-3 sm:px-4 shadow-lg border-2 transition-all hover:scale-102 hover:shadow-xl active:scale-100 ${getButtonStyle()}`}
                     style={{
                       backgroundColor: buttonColor,
                       color: buttonTextColor,
-                      borderColor: buttonColor,
+                      borderColor: buttonTextColor,
                     }}
                   >
                     <div className="flex items-start gap-3 sm:gap-4">
@@ -219,8 +219,11 @@ export default function ProfilePage() {
                           {link.title}
                         </h2>
                         <p className="text-sm text-current opacity-90 mt-1 line-clamp-2 text-left">
-                          {link.description || 'Click to view product'}
+                          {link.description || 'Ürün detaylarını görmek için tıklayın'}
                         </p>
+                        <span className="text-xs font-semibold mt-2 inline-block opacity-100">
+                          🛍️ Ürünü İncele ve Satın Al
+                        </span>
                       </div>
                     </div>
                   </button>
