@@ -8,6 +8,8 @@ export default function AuthPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [username, setUsername] = useState('')
+  const [phone, setPhone] = useState('')
+  const [businessType, setBusinessType] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -36,7 +38,7 @@ export default function AuthPage() {
           return
         }
 
-        const { error } = await signUp(email, password, username)
+        const { error } = await signUp(email, password, username, phone, businessType)
         if (error) {
           setError(error.message)
         } else {
@@ -57,10 +59,10 @@ export default function AuthPage() {
         <div className="text-center mb-6 sm:mb-8">
           <Link2 className="w-10 h-10 sm:w-12 sm:h-12 text-primary-600 mx-auto mb-3 sm:mb-4" />
           <h1 className="text-xl sm:text-2xl font-bold mb-2">
-            {isLogin ? 'Welcome Back' : 'Get Started'}
+            {isLogin ? 'Tekrar Hoş Geldin' : 'Hemen Başla'}
           </h1>
           <p className="text-sm sm:text-base text-gray-600">
-            {isLogin ? 'Sign in to your account' : 'Create your free account'}
+            {isLogin ? 'Hesabına giriş yap' : 'Ücretsiz hesabını oluştur'}
           </p>
         </div>
 
@@ -75,12 +77,12 @@ export default function AuthPage() {
           {!isLogin && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Username
+                Kullanıcı Adı *
               </label>
               <input
                 type="text"
                 className="input"
-                placeholder="yourusername"
+                placeholder="kullaniciadi"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -91,12 +93,12 @@ export default function AuthPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email
+              Email *
             </label>
             <input
               type="email"
               className="input"
-              placeholder="you@example.com"
+              placeholder="ornek@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -106,7 +108,7 @@ export default function AuthPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Password
+              Şifre *
             </label>
             <input
               type="password"
@@ -120,12 +122,52 @@ export default function AuthPage() {
             />
           </div>
 
+          {!isLogin && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Telefon
+                </label>
+                <input
+                  type="tel"
+                  className="input"
+                  placeholder="+90 5XX XXX XX XX"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  disabled={loading}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  İş Alanınız
+                </label>
+                <select
+                  className="input"
+                  value={businessType}
+                  onChange={(e) => setBusinessType(e.target.value)}
+                  disabled={loading}
+                >
+                  <option value="">Seçiniz</option>
+                  <option value="influencer">Influencer / İçerik Üretici</option>
+                  <option value="e-commerce">E-Ticaret</option>
+                  <option value="freelancer">Freelancer</option>
+                  <option value="musician">Müzisyen / Sanatçı</option>
+                  <option value="blogger">Blogger / Yazar</option>
+                  <option value="business">İşletme Sahibi</option>
+                  <option value="personal">Kişisel Kullanım</option>
+                  <option value="other">Diğer</option>
+                </select>
+              </div>
+            </>
+          )}
+
           <button
             type="submit"
             className="w-full btn btn-primary"
             disabled={loading}
           >
-            {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Create Account')}
+            {loading ? 'Yükleniyor...' : (isLogin ? 'Giriş Yap' : 'Hesap Oluştur')}
           </button>
         </form>
 
@@ -140,14 +182,14 @@ export default function AuthPage() {
             disabled={loading}
           >
             {isLogin
-              ? "Don't have an account? Sign up"
-              : 'Already have an account? Sign in'}
+              ? "Hesabın yok mu? Kayıt ol"
+              : 'Zaten hesabın var mı? Giriş yap'}
           </button>
         </div>
 
         <div className="mt-4 sm:mt-6 text-center">
           <a href="/" className="text-gray-600 hover:text-gray-900 text-sm">
-            ← Back to home
+            ← Ana sayfaya dön
           </a>
         </div>
       </div>
